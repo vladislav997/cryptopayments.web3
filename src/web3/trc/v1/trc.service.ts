@@ -45,15 +45,24 @@ export class TrcServiceV1 {
 
   async balance(balanceTrcDto) {
     try {
+      let balance;
       const tronWeb = this.tronWebCall();
-      tronWeb.setAddress(balanceTrcDto.address);
-      const contract = await tronWeb.contract().at(balanceTrcDto.contract);
 
-      const response = await contract.balanceOf(balanceTrcDto.address).call();
-      const decimal = await contract.decimals().call();
-      const getDecimal = Math.pow(10, decimal);
+      if (balanceTrcDto.type == 'coin') {
+        const getBalance = await tronWeb.trx.getBalance(balanceTrcDto.address);
+        balance = parseFloat(tronWeb.fromSun(getBalance));
+      }
 
-      const balance = tronWeb.BigNumber(response._hex) / getDecimal;
+      if (balanceTrcDto.type == 'token') {
+        tronWeb.setAddress(balanceTrcDto.address);
+        const contract = await tronWeb.contract().at(balanceTrcDto.contract);
+
+        const response = await contract.balanceOf(balanceTrcDto.address).call();
+        const decimal = await contract.decimals().call();
+        const getDecimal = Math.pow(10, decimal);
+
+        balance = tronWeb.BigNumber(response._hex) / getDecimal;
+      }
 
       return {
         status: true,
