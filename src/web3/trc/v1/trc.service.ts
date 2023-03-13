@@ -110,13 +110,13 @@ export class TrcServiceV1 {
         transaction = await contract
           .transfer(sendTrcDto.to_address, BigInt(amount.toString()))
           .send();
+
+        transaction = await tronWeb.trx.getTransaction(transaction);
       }
 
       return {
         status: true,
-        data: {
-          hash: transaction,
-        },
+        data: transaction,
       };
     } catch (e) {
       throw new HttpException(
@@ -167,16 +167,18 @@ export class TrcServiceV1 {
 
       if (transactionsTrcDto.type == 'coin') {
         url = url + '?only_confirmed=true';
-        if (transactionsTrcDto.payment_type == 'sent') {
-          url = url + '&only_from=true';
-        } else if (transactionsTrcDto.payment_type == 'received') {
-          url = url + '&only_to=true';
-        }
       }
 
       if (transactionsTrcDto.type == 'token') {
         url = url + '/trc20?&contract_address=' + transactionsTrcDto.contract;
       }
+
+      if (transactionsTrcDto.payment_type == 'sent') {
+        url = url + '&only_from=true';
+      } else if (transactionsTrcDto.payment_type == 'received') {
+        url = url + '&only_to=true';
+      }
+
       const response: AxiosResponse<Response[]> = await this.httpService
         .get(url)
         .toPromise();

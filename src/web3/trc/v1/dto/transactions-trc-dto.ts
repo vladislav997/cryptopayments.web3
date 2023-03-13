@@ -5,11 +5,10 @@ export class TransactionsTrcDto {
   @IsString()
   readonly address: string;
 
-  @ValidateIf((o) => o.type == 'coin')
   @IsNotEmpty()
   @IsString()
   @IsIn(['all', 'sent', 'received'])
-  readonly payment_type: string;
+  readonly payment_type: string[];
 
   @ValidateIf((o) => o.type == 'token')
   @IsNotEmpty()
