@@ -3,6 +3,7 @@ import { TrcServiceV1 } from './trc.service';
 import { BalanceTrcDto } from './dto/balance-trc.dto';
 import { SendTrcDto } from './dto/send-trc.dto';
 import { TransactionsTrcDto } from './dto/transactions-trc-dto';
+import { TransactionTrcDto } from './dto/transaction-trc-dto';
 
 @Controller({
   path: 'trc',
@@ -24,6 +25,11 @@ export class TrcControllerV1 {
   @Post('/send')
   send(@Body(new ValidationPipe()) sendTrcDto: SendTrcDto) {
     return this.trcService.send(sendTrcDto);
+  }
+
+  @Post('/transaction')
+  transaction(@Body(new ValidationPipe()) transactionTrcDto: TransactionTrcDto) {
+    return this.trcService.transaction(transactionTrcDto);
   }
 
   @Post('/transactions')

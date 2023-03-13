@@ -83,34 +83,67 @@ export class TrcServiceV1 {
   }
 
   async send(sendTrcDto) {
-    let contract;
-    let amount;
+    try {
+      let transaction;
+      let contract;
+      let amount;
+      const tronWeb = this.tronWebCall();
 
+      if (sendTrcDto.type == 'coin') {
+        if (tronWeb.isAddress(sendTrcDto.to_address)) {
+          amount = parseInt(tronWeb.toSun(sendTrcDto.amount));
+          transaction = await tronWeb.trx.sendTransaction(
+            sendTrcDto.to_address,
+            amount,
+            sendTrcDto.private_key,
+          );
+        }
+      }
+
+      if (sendTrcDto.type == 'token') {
+        tronWeb.setPrivateKey(sendTrcDto.private_key);
+        contract = await tronWeb.contract().at(sendTrcDto.contract);
+        const decimalValue = await contract.decimals().call();
+        const getDecimal = Math.pow(10, decimalValue);
+        amount = parseInt(String(Number(sendTrcDto.amount) * getDecimal));
+
+        transaction = await contract
+          .transfer(sendTrcDto.to_address, BigInt(amount.toString()))
+          .send();
+      }
+
+      return {
+        status: true,
+        data: {
+          hash: transaction,
+        },
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: false,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
+  async transaction(transactionTrcDto) {
     try {
       const tronWeb = this.tronWebCall();
-      tronWeb.setPrivateKey(sendTrcDto.private_key);
-      contract = await tronWeb.contract().at(sendTrcDto.contract);
-      const decimalValue = await contract.decimals().call();
-      const getDecimal = Math.pow(10, decimalValue);
-      amount = parseInt(String(Number(sendTrcDto.amount) * getDecimal));
 
-      const transaction = await contract
-        .transfer(sendTrcDto.to_address, BigInt(amount.toString()))
-        .send();
+      const transaction = await tronWeb.trx.getTransaction(
+        transactionTrcDto.txid,
+      );
 
-      if (transaction) {
-        return {
-          status: true,
-          data: {
-            hash: transaction,
-          },
-        };
-      } else {
-        return {
-          status: false,
-          message: 'Transaction failed',
-        };
-      }
+      return {
+        status: true,
+        data: transaction,
+      };
     } catch (e) {
       throw new HttpException(
         {
@@ -127,11 +160,23 @@ export class TrcServiceV1 {
 
   async transactions(transactionsTrcDto) {
     try {
-      const url =
+      let url =
         'https://api.trongrid.io/v1/accounts/' +
         transactionsTrcDto.address +
-        '/transactions/trc20?&contract_address=' +
-        transactionsTrcDto.contract;
+        '/transactions';
+
+      if (transactionsTrcDto.type == 'coin') {
+        url = url + '?only_confirmed=true';
+        if (transactionsTrcDto.payment_type == 'sent') {
+          url = url + '&only_from=true';
+        } else if (transactionsTrcDto.payment_type == 'received') {
+          url = url + '&only_to=true';
+        }
+      }
+
+      if (transactionsTrcDto.type == 'token') {
+        url = url + '/trc20?&contract_address=' + transactionsTrcDto.contract;
+      }
       const response: AxiosResponse<Response[]> = await this.httpService
         .get(url)
         .toPromise();
