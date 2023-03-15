@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TrcControllerV1 } from './trc.controller';
 
-describe('TrcController', () => {
+describe('TrcControllerV1', () => {
   let controller: TrcControllerV1;
 
   beforeEach(async () => {

@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString, IsUrl, IsIn, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsString, IsIn, ValidateIf } from 'class-validator';
 
-export class BalanceErcDto {
-  @IsNotEmpty()
-  @IsUrl()
-  readonly chain_link: string;
-
+export class BalanceWeb3Dto {
   @IsNotEmpty()
   @IsString()
   readonly address: string;
