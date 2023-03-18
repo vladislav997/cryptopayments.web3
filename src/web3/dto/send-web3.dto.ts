@@ -3,10 +3,6 @@ import { IsNotEmpty, IsString, IsIn, ValidateIf, IsNumber, IsOptional } from 'cl
 export class SendWeb3Dto {
   @IsNotEmpty()
   @IsString()
-  readonly address: string;
-
-  @IsNotEmpty()
-  @IsString()
   readonly to_address: string;
 
   @ValidateIf((o) => o.type == 'token')

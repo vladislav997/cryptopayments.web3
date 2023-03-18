@@ -22,22 +22,27 @@ export class Web3Service {
     return await getContract.methods.balanceOf(address).call();
   }
 
-  async calculateEstimateGasFees(web3, amount, dto) {
+  async getAddressByPrivateKey(web3, private_key) {
+    const getAddress = await web3.eth.accounts.privateKeyToAccount(private_key);
+    return getAddress.address;
+  }
+
+  async calculateEstimateGasFees(web3, amount, address, dto) {
     let usedGasLimit = dto.gas_limit;
     let estimateGas;
     const gasPrice = await web3.eth.getGasPrice();
-    let gasFees = usedGasLimit * gasPrice;
+    let gasFees = Number(usedGasLimit) * Number(gasPrice);
     const contract = new web3.eth.Contract(
       this.contractJson.json(),
       dto.contract,
     );
 
-    if (usedGasLimit > 0) {
-      gasFees = usedGasLimit * gasPrice;
+    if (Number(usedGasLimit) > 0) {
+      gasFees = Number(usedGasLimit) * Number(gasPrice);
     } else {
       estimateGas = await contract.methods
         .transfer(dto.to_address, amount)
-        .estimateGas({ from: dto.address });
+        .estimateGas({ from: address });
       usedGasLimit = parseInt(String(estimateGas / 2)) + estimateGas;
     }
 
@@ -141,26 +146,26 @@ export class Web3Service {
     try {
       let transaction;
       const web3 = new Web3(chainLink);
-      const validateAddress = new Web3().utils.isAddress(sendWeb3Dto.address);
+      const address = await this.getAddressByPrivateKey(
+        web3,
+        sendWeb3Dto.private_key,
+      );
       const validateRecipientAddress = new Web3().utils.isAddress(
         sendWeb3Dto.to_address,
       );
 
-      if (validateAddress && validateRecipientAddress) {
+      if (validateRecipientAddress) {
         if (sendWeb3Dto.type == 'coin') {
           const amount = Web3.utils.toWei(
             sendWeb3Dto.amount.toString(),
             'ether',
           );
-          const nonce = await web3.eth.getTransactionCount(
-            sendWeb3Dto.address,
-            'latest',
-          );
+          const nonce = await web3.eth.getTransactionCount(address, 'latest');
           const usedGasLimit =
             sendWeb3Dto.gas_limit > 0 ? sendWeb3Dto.gas_limit : 63000;
 
           transaction = {
-            from: sendWeb3Dto.address,
+            from: address,
             nonce: web3.utils.toHex(nonce),
             gas: usedGasLimit,
             to: sendWeb3Dto.to_address,
@@ -184,16 +189,21 @@ export class Web3Service {
             ).toLocaleString('fullwide', { useGrouping: false });
 
             const calculateEstimateGasFees =
-              await this.calculateEstimateGasFees(web3, amount, sendWeb3Dto);
+              await this.calculateEstimateGasFees(
+                web3,
+                amount,
+                address,
+                sendWeb3Dto,
+              );
             const contract = new web3.eth.Contract(
               this.contractJson.json(),
               sendWeb3Dto.contract,
             );
 
             transaction = {
-              from: sendWeb3Dto.address,
+              from: address,
               to: sendWeb3Dto.contract,
-              gas: Web3.utils.toHex(calculateEstimateGasFees.gasLimit),
+              gas: calculateEstimateGasFees.gasLimit,
               data: contract.methods
                 .transfer(sendWeb3Dto.to_address, amount)
                 .encodeABI(),
@@ -223,7 +233,7 @@ export class Web3Service {
         };
       } else {
         throw new HttpException(
-          'Incorrect address or recipient address',
+          'Incorrect recipient address',
           HttpStatus.BAD_REQUEST,
         );
       }
