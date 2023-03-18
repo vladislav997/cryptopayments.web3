@@ -1,30 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Contract } from './json/contract';
+import { getAddressByPrivateKey } from '../common/helper/helper.function';
+import contractJson from '../common/helper/contract-json';
 const Web3 = require('web3');
 
 @Injectable()
 export class Web3Service {
-  constructor(private readonly contractJson: Contract) {}
-
   async getContractDecimal(web3, contract) {
-    const getContract = new web3.eth.Contract(
-      this.contractJson.json(),
-      contract,
-    );
+    const getContract = new web3.eth.Contract(contractJson(), contract);
     return await getContract.methods.decimals().call();
   }
 
   async balanceCall(web3, contract, address) {
-    const getContract = new web3.eth.Contract(
-      this.contractJson.json(),
-      contract,
-    );
+    const getContract = new web3.eth.Contract(contractJson(), contract);
     return await getContract.methods.balanceOf(address).call();
-  }
-
-  async getAddressByPrivateKey(web3, private_key) {
-    const getAddress = await web3.eth.accounts.privateKeyToAccount(private_key);
-    return getAddress.address;
   }
 
   async calculateEstimateGasFees(web3, amount, address, dto) {
@@ -32,10 +20,7 @@ export class Web3Service {
     let estimateGas;
     const gasPrice = await web3.eth.getGasPrice();
     let gasFees = Number(usedGasLimit) * Number(gasPrice);
-    const contract = new web3.eth.Contract(
-      this.contractJson.json(),
-      dto.contract,
-    );
+    const contract = new web3.eth.Contract(contractJson(), dto.contract);
 
     if (Number(usedGasLimit) > 0) {
       gasFees = Number(usedGasLimit) * Number(gasPrice);
@@ -146,10 +131,7 @@ export class Web3Service {
     try {
       let transaction;
       const web3 = new Web3(chainLink);
-      const address = await this.getAddressByPrivateKey(
-        web3,
-        sendWeb3Dto.private_key,
-      );
+      const address = getAddressByPrivateKey(web3, sendWeb3Dto.private_key);
       const validateRecipientAddress = new Web3().utils.isAddress(
         sendWeb3Dto.to_address,
       );
@@ -196,7 +178,7 @@ export class Web3Service {
                 sendWeb3Dto,
               );
             const contract = new web3.eth.Contract(
-              this.contractJson.json(),
+              contractJson(),
               sendWeb3Dto.contract,
             );
 

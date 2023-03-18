@@ -2,19 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import * as TronWeb from 'tronweb';
+import { tronWebCall } from '../../common/helper/helper.function';
 
 @Injectable()
 export class TrcServiceV1 {
   constructor(private readonly httpService: HttpService) {}
-
-  tronWebCall() {
-    return new TronWeb({
-      fullHost: 'https://api.trongrid.io',
-      headers: {
-        'TRON-PRO-API-KEY': process.env.TRONGRID_API_KEY,
-      },
-    });
-  }
 
   async validateAddress(address) {
     const url = 'https://api.trongrid.io/wallet/validateaddress';
@@ -26,7 +18,7 @@ export class TrcServiceV1 {
 
   async create() {
     try {
-      const tronWeb = this.tronWebCall();
+      const tronWeb = tronWebCall(TronWeb);
       const response = await tronWeb.createAccount();
 
       return {
@@ -56,7 +48,7 @@ export class TrcServiceV1 {
 
       if (validateAddress) {
         let balance;
-        const tronWeb = this.tronWebCall();
+        const tronWeb = tronWebCall(TronWeb);
 
         if (balanceTrcDto.type == 'coin') {
           const getBalance = await tronWeb.trx.getBalance(
@@ -118,7 +110,7 @@ export class TrcServiceV1 {
         let transaction;
         let contract;
         let amount;
-        const tronWeb = this.tronWebCall();
+        const tronWeb = tronWebCall(TronWeb);
 
         if (sendTrcDto.type == 'coin') {
           if (tronWeb.isAddress(sendTrcDto.to_address)) {
@@ -180,7 +172,7 @@ export class TrcServiceV1 {
 
   async transaction(transactionTrcDto) {
     try {
-      const tronWeb = this.tronWebCall();
+      const tronWeb = tronWebCall(TronWeb);
 
       const transaction = await tronWeb.trx.getTransaction(
         transactionTrcDto.txid,
