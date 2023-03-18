@@ -65,7 +65,6 @@ export class Web3Service {
     } catch (e) {
       throw new HttpException(
         {
-          status: false,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -80,37 +79,54 @@ export class Web3Service {
     try {
       let balance;
       const web3 = new Web3(chainLink);
+      const validateAddress = new Web3().utils.isAddress(
+        balanceWeb3Dto.address,
+      );
 
-      if (balanceWeb3Dto.type == 'coin') {
-        const getBalance = await web3.eth.getBalance(balanceWeb3Dto.address);
+      if (validateAddress) {
+        if (balanceWeb3Dto.type == 'coin') {
+          const getBalance = await web3.eth.getBalance(balanceWeb3Dto.address);
 
-        balance = parseFloat(
-          web3.utils.fromWei(getBalance.toString(), 'ether'),
-        );
+          balance = parseFloat(
+            web3.utils.fromWei(getBalance.toString(), 'ether'),
+          );
+        }
+
+        if (balanceWeb3Dto.type == 'token') {
+          const validateContract = new Web3().utils.isAddress(
+            balanceWeb3Dto.contract,
+          );
+
+          if (validateContract) {
+            const decimal = await this.getContractDecimal(
+              web3,
+              balanceWeb3Dto.contract,
+            );
+            const balanceCall = await this.balanceCall(
+              web3,
+              balanceWeb3Dto.contract,
+              balanceWeb3Dto.address,
+            );
+
+            balance = balanceCall / Math.pow(10, decimal);
+          } else {
+            throw new HttpException(
+              'Incorrect contract address',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        return {
+          status: true,
+          data: balance,
+        };
+      } else {
+        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
-
-      if (balanceWeb3Dto.type == 'token') {
-        const decimal = await this.getContractDecimal(
-          web3,
-          balanceWeb3Dto.contract,
-        );
-        const balanceCall = await this.balanceCall(
-          web3,
-          balanceWeb3Dto.contract,
-          balanceWeb3Dto.address,
-        );
-
-        balance = balanceCall / Math.pow(10, decimal);
-      }
-
-      return {
-        status: true,
-        data: balance,
-      };
     } catch (e) {
       throw new HttpException(
         {
-          status: false,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -125,11 +141,12 @@ export class Web3Service {
     try {
       let transaction;
       const web3 = new Web3(chainLink);
+      const validateAddress = new Web3().utils.isAddress(sendWeb3Dto.address);
       const validateRecipientAddress = new Web3().utils.isAddress(
         sendWeb3Dto.to_address,
       );
 
-      if (validateRecipientAddress) {
+      if (validateAddress && validateRecipientAddress) {
         if (sendWeb3Dto.type == 'coin') {
           const amount = Web3.utils.toWei(
             sendWeb3Dto.amount.toString(),
@@ -153,49 +170,52 @@ export class Web3Service {
         }
 
         if (sendWeb3Dto.type == 'token') {
-          const decimal = await this.getContractDecimal(
-            web3,
+          const validateContract = new Web3().utils.isAddress(
             sendWeb3Dto.contract,
           );
+          if (validateContract) {
+            const decimal = await this.getContractDecimal(
+              web3,
+              sendWeb3Dto.contract,
+            );
 
-          const amount = (
-            sendWeb3Dto.amount * Math.pow(10, decimal)
-          ).toLocaleString('fullwide', { useGrouping: false });
+            const amount = (
+              sendWeb3Dto.amount * Math.pow(10, decimal)
+            ).toLocaleString('fullwide', { useGrouping: false });
 
-          const calculateEstimateGasFees = await this.calculateEstimateGasFees(
-            web3,
-            amount,
-            sendWeb3Dto,
-          );
-          const contract = new web3.eth.Contract(
-            this.contractJson.json(),
-            sendWeb3Dto.contract,
-          );
+            const calculateEstimateGasFees =
+              await this.calculateEstimateGasFees(web3, amount, sendWeb3Dto);
+            const contract = new web3.eth.Contract(
+              this.contractJson.json(),
+              sendWeb3Dto.contract,
+            );
 
-          transaction = {
-            from: sendWeb3Dto.address,
-            to: sendWeb3Dto.contract,
-            gas: Web3.utils.toHex(calculateEstimateGasFees.gasLimit),
-            data: contract.methods
-              .transfer(sendWeb3Dto.to_address, amount)
-              .encodeABI(),
-          };
+            transaction = {
+              from: sendWeb3Dto.address,
+              to: sendWeb3Dto.contract,
+              gas: Web3.utils.toHex(calculateEstimateGasFees.gasLimit),
+              data: contract.methods
+                .transfer(sendWeb3Dto.to_address, amount)
+                .encodeABI(),
+            };
+          } else {
+            throw new HttpException(
+              'Incorrect contract address',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
         }
 
         const signTransaction = await web3.eth.accounts.signTransaction(
           transaction,
           sendWeb3Dto.private_key,
         );
-        const receipt = await new Promise(async (resolve, reject) => {
-          await web3.eth
+        const receipt = await new Promise((resolve, reject) =>
+          web3.eth
             .sendSignedTransaction(signTransaction.rawTransaction)
-            .on('receipt', (receipt) => {
-              resolve(receipt);
-            })
-            .on('error', (error) => {
-              reject(error);
-            });
-        });
+            .on('receipt', resolve)
+            .on('error', reject),
+        );
 
         return {
           status: true,
@@ -203,17 +223,13 @@ export class Web3Service {
         };
       } else {
         throw new HttpException(
-          {
-            status: false,
-            message: 'Incorrect recipient address',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          'Incorrect address or recipient address',
+          HttpStatus.BAD_REQUEST,
         );
       }
     } catch (e) {
       throw new HttpException(
         {
-          status: false,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
