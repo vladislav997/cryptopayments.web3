@@ -197,33 +197,84 @@ export class TrcServiceV1 {
 
   async transactions(transactionsTrcDto) {
     try {
-      let url =
-        'https://api.trongrid.io/v1/accounts/' +
-        transactionsTrcDto.address +
-        '/transactions';
+      const validateAddress = await this.validateAddress(
+        transactionsTrcDto.address,
+      );
 
-      if (transactionsTrcDto.type == 'coin') {
-        url = url + '?only_confirmed=true';
+      if (validateAddress) {
+        let result;
+        let url =
+          'https://api.trongrid.io/v1/accounts/' +
+          transactionsTrcDto.address +
+          '/transactions';
+
+        if (transactionsTrcDto.type == 'coin') {
+          url = url + '?only_confirmed=true';
+        }
+
+        if (transactionsTrcDto.type == 'token') {
+          const validateContractAddress = await this.validateAddress(
+            transactionsTrcDto.contract,
+          );
+          if (validateContractAddress) {
+            url =
+              url + '/trc20?&contract_address=' + transactionsTrcDto.contract;
+          } else {
+            throw new HttpException(
+              'Incorrect contract address',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        if (transactionsTrcDto.payment_type == 'sent') {
+          url = url + '&only_from=true';
+        } else if (transactionsTrcDto.payment_type == 'received') {
+          url = url + '&only_to=true';
+        }
+
+        const response: AxiosResponse<Response[]> = await this.httpService
+          .get(url)
+          .toPromise();
+
+        if (transactionsTrcDto.type == 'coin') {
+          result = response.data['data'].map(({ ret, txID, raw_data }) => ({
+            is_success_transaction: ret[0].contractRet == 'SUCCESS',
+            transaction_id: txID,
+            from: '',
+            to: '',
+            value: '',
+            timestamp: String(raw_data.timestamp),
+          }));
+        }
+
+        if (transactionsTrcDto.type == 'token') {
+          result = response.data['data'].map(
+            ({
+              token_info,
+              transaction_id,
+              from,
+              to,
+              value,
+              block_timestamp,
+            }) => ({
+              token_symbol: token_info.symbol,
+              transaction_id: transaction_id,
+              from: from,
+              to: to,
+              value: value,
+              timestamp: String(block_timestamp),
+            }),
+          );
+        }
+
+        return {
+          status: true,
+          data: result,
+        };
+      } else {
+        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
-
-      if (transactionsTrcDto.type == 'token') {
-        url = url + '/trc20?&contract_address=' + transactionsTrcDto.contract;
-      }
-
-      if (transactionsTrcDto.payment_type == 'sent') {
-        url = url + '&only_from=true';
-      } else if (transactionsTrcDto.payment_type == 'received') {
-        url = url + '&only_to=true';
-      }
-
-      const response: AxiosResponse<Response[]> = await this.httpService
-        .get(url)
-        .toPromise();
-
-      return {
-        status: true,
-        data: response.data['data'],
-      };
     } catch (e) {
       throw new HttpException(
         {

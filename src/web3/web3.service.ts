@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { getAddressByPrivateKey } from '../common/helper/helper.function';
+import { AxiosResponse } from 'axios';
+import { HttpService } from '@nestjs/axios';
 import contractJson from '../common/helper/contract-json';
 const Web3 = require('web3');
 
 @Injectable()
 export class Web3Service {
+  constructor(private readonly httpService: HttpService) {}
+
   async getContractDecimal(web3, contract) {
     const getContract = new web3.eth.Contract(contractJson(), contract);
     return await getContract.methods.decimals().call();
@@ -218,6 +222,98 @@ export class Web3Service {
           'Incorrect recipient address',
           HttpStatus.BAD_REQUEST,
         );
+      }
+    } catch (e) {
+      throw new HttpException(
+        {
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
+  async transactions(chainLink, apiKey, transactionsWeb3Dto) {
+    try {
+      const validateAddress = new Web3().utils.isAddress(
+        transactionsWeb3Dto.address,
+      );
+
+      if (validateAddress) {
+        let result;
+        let url = 'https://api.etherscan.io/api?module=account';
+
+        if (transactionsWeb3Dto.type == 'coin') {
+          url = url + '&action=txlist' + '&endblock=99999999';
+        }
+
+        if (transactionsWeb3Dto.type == 'token') {
+          const validateContract = new Web3().utils.isAddress(
+            transactionsWeb3Dto.contract,
+          );
+          if (validateContract) {
+            url =
+              url +
+              '&action=tokentx' +
+              '&endblock=27025780' +
+              '&contractaddress=' +
+              transactionsWeb3Dto.contract;
+          } else {
+            throw new HttpException(
+              'Incorrect contract address',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        url =
+          url +
+          '&address=' +
+          transactionsWeb3Dto.address +
+          '&startblock=0' +
+          '&sort=asc' +
+          '&apikey=' +
+          apiKey;
+
+        const response: AxiosResponse<Response[]> = await this.httpService
+          .get(url)
+          .toPromise();
+
+        if (transactionsWeb3Dto.type == 'coin') {
+          result = response.data['result'].map(
+            ({ txreceipt_status, hash, from, to, value, timeStamp }) => ({
+              is_success_transaction: txreceipt_status == 1,
+              transaction_id: hash,
+              from: from,
+              to: to,
+              value: value,
+              timestamp: timeStamp,
+            }),
+          );
+        }
+
+        if (transactionsWeb3Dto.type == 'token') {
+          result = response.data['result'].map(
+            ({ tokenSymbol, hash, from, to, value, timeStamp }) => ({
+              token_symbol: tokenSymbol,
+              transaction_id: hash,
+              from: from,
+              to: to,
+              value: value,
+              timestamp: timeStamp,
+            }),
+          );
+        }
+
+        return {
+          status: true,
+          data: result,
+        };
+      } else {
+        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
     } catch (e) {
       throw new HttpException(

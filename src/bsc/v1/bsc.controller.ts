@@ -2,6 +2,7 @@ import { Controller, Post, Body, ValidationPipe, Res, HttpCode } from '@nestjs/c
 import { Web3Service } from '../../web3/web3.service';
 import { BalanceWeb3Dto } from '../../web3/dto/balance-web3.dto';
 import { SendWeb3Dto } from '../../web3/dto/send-web3.dto';
+import { TransactionsWeb3Dto } from '../../web3/dto/transactions-web3.dto';
 
 @Controller({
   path: 'bsc',
@@ -31,6 +32,18 @@ export class BscControllerV1 {
       process.env.CHAIN_LINK_BSC,
       process.env.CHAIN_ID_BSC,
       sendWeb3Dto,
+    );
+  }
+
+  @Post('/transactions')
+  @HttpCode(200)
+  transactions(
+    @Body(new ValidationPipe()) transactionsWeb3Dto: TransactionsWeb3Dto,
+  ) {
+    return this.web3Service.transactions(
+      process.env.CHAIN_LINK_BSC,
+      process.env.BSCSCAN_APIKEY,
+      transactionsWeb3Dto,
     );
   }
 }

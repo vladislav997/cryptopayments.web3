@@ -1,11 +1,11 @@
-import { IsIn, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export class TransactionsTrcDto {
   @IsNotEmpty()
   @IsString()
   readonly address: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsIn(['all', 'sent', 'received'])
   readonly payment_type: string[];
