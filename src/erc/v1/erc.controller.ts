@@ -42,6 +42,7 @@ export class ErcControllerV1 {
   ) {
     return this.web3Service.transactions(
       process.env.CHAIN_LINK_ETH,
+      process.env.CHAIN_ID_ETH,
       process.env.ETHERSCAN_APIKEY,
       transactionsWeb3Dto,
     );

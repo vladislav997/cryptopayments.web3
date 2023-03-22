@@ -249,6 +249,7 @@ export class TrcServiceV1 {
         }
 
         if (transactionsTrcDto.type == 'token') {
+          const tronWeb = tronWebCall(TronWeb);
           result = response.data['data'].map(
             ({
               token_info,
@@ -262,7 +263,7 @@ export class TrcServiceV1 {
               transaction_id: transaction_id,
               from: from,
               to: to,
-              value: value,
+              value: tronWeb.fromSun(value),
               timestamp: String(block_timestamp),
             }),
           );

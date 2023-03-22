@@ -42,6 +42,7 @@ export class BscControllerV1 {
   ) {
     return this.web3Service.transactions(
       process.env.CHAIN_LINK_BSC,
+      process.env.CHAIN_ID_BSC,
       process.env.BSCSCAN_APIKEY,
       transactionsWeb3Dto,
     );

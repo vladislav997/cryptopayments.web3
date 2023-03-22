@@ -236,7 +236,7 @@ export class Web3Service {
     }
   }
 
-  async transactions(chainLink, apiKey, transactionsWeb3Dto) {
+  async transactions(chainLink, chainId, apiKey, transactionsWeb3Dto) {
     try {
       const validateAddress = new Web3().utils.isAddress(
         transactionsWeb3Dto.address,
@@ -244,7 +244,16 @@ export class Web3Service {
 
       if (validateAddress) {
         let result;
-        let url = 'https://api.etherscan.io/api?module=account';
+        let url;
+
+        switch (chainId) {
+          case '1':
+            url = 'https://api.etherscan.io/api?module=account';
+            break;
+          case '56':
+            url = 'https://api.bscscan.com/api?module=account';
+            break;
+        }
 
         if (transactionsWeb3Dto.type == 'coin') {
           url = url + '&action=txlist' + '&endblock=99999999';
@@ -258,7 +267,7 @@ export class Web3Service {
             url =
               url +
               '&action=tokentx' +
-              '&endblock=27025780' +
+              '&endblock=999999999' +
               '&contractaddress=' +
               transactionsWeb3Dto.contract;
           } else {
@@ -289,20 +298,29 @@ export class Web3Service {
               transaction_id: hash,
               from: from,
               to: to,
-              value: value,
+              value: Web3.utils.fromWei(value.toString(), 'ether'),
               timestamp: timeStamp,
             }),
           );
         }
 
         if (transactionsWeb3Dto.type == 'token') {
+          const web3 = new Web3(chainLink);
+          const decimal = await this.getContractDecimal(
+            web3,
+            transactionsWeb3Dto.contract,
+          );
+
           result = response.data['result'].map(
             ({ tokenSymbol, hash, from, to, value, timeStamp }) => ({
               token_symbol: tokenSymbol,
               transaction_id: hash,
               from: from,
               to: to,
-              value: value,
+              value: (value / Math.pow(10, decimal)).toLocaleString(
+                'fullwide',
+                { useGrouping: false },
+              ),
               timestamp: timeStamp,
             }),
           );
