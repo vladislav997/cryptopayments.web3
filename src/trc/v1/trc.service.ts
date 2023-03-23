@@ -104,13 +104,15 @@ export class TrcServiceV1 {
 
   async send(sendTrcDto) {
     try {
+      let transaction;
+      let contract;
+      let amount;
+      let response;
       const validateAddress = await this.validateAddress(sendTrcDto.to_address);
 
       if (validateAddress) {
-        let transaction;
-        let contract;
-        let amount;
         const tronWeb = tronWebCall(TronWeb);
+        const address = tronWeb.address.fromPrivateKey(sendTrcDto.private_key);
 
         if (sendTrcDto.type == 'coin') {
           if (tronWeb.isAddress(sendTrcDto.to_address)) {
@@ -120,6 +122,14 @@ export class TrcServiceV1 {
               amount,
               sendTrcDto.private_key,
             );
+            response = {
+              is_success_transaction: transaction.result,
+              transaction_id: transaction.txid,
+              from: address,
+              to: sendTrcDto.to_address,
+              value: String(sendTrcDto.amount),
+              timestamp: String(transaction.transaction.raw_data.timestamp),
+            };
           }
         }
 
@@ -139,6 +149,15 @@ export class TrcServiceV1 {
               .send();
 
             transaction = await tronWeb.trx.getTransaction(transaction);
+            response = {
+              is_success_transaction:
+                transaction.ret[0].contractRet == 'SUCCESS',
+              transaction_id: transaction.txID,
+              from: address,
+              to: sendTrcDto.to_address,
+              value: String(sendTrcDto.amount),
+              timestamp: String(transaction.raw_data.timestamp),
+            };
           } else {
             throw new HttpException(
               'Incorrect contract address',
@@ -149,7 +168,7 @@ export class TrcServiceV1 {
 
         return {
           status: true,
-          data: transaction,
+          data: response,
         };
       } else {
         throw new HttpException(

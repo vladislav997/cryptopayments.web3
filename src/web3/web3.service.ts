@@ -206,16 +206,25 @@ export class Web3Service {
           transaction,
           sendWeb3Dto.private_key,
         );
-        const receipt = await new Promise((resolve, reject) =>
+        const receipt = await new Promise<any>((resolve, reject) =>
           web3.eth
             .sendSignedTransaction(signTransaction.rawTransaction)
             .on('receipt', resolve)
             .on('error', reject),
         );
 
+        const response = {
+          is_success_transaction: receipt.status,
+          transaction_id: receipt.transactionHash,
+          from: address,
+          to: sendWeb3Dto.to_address,
+          value: String(sendWeb3Dto.amount),
+          timestamp: String(Date.now()),
+        };
+
         return {
           status: true,
-          data: receipt,
+          data: response,
         };
       } else {
         throw new HttpException(
