@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { getAddressByPrivateKey } from '../common/helper/helper.function';
+import { getAddressByPrivateKeyWeb3 } from '../common/helper/helper.function';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import contractJson from '../common/helper/contract-json';
@@ -135,7 +135,7 @@ export class Web3Service {
     try {
       let transaction;
       const web3 = new Web3(chainLink);
-      const address = getAddressByPrivateKey(web3, sendWeb3Dto.private_key);
+      const address = getAddressByPrivateKeyWeb3(web3, sendWeb3Dto.private_key);
       const validateRecipientAddress = new Web3().utils.isAddress(
         sendWeb3Dto.to_address,
       );

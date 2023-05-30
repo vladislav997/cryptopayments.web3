@@ -7,7 +7,15 @@ export function tronWebCall(TronWeb) {
   });
 }
 
-export function getAddressByPrivateKey(web3, private_key) {
+export function getAddressByPrivateKeyWeb3(web3, private_key) {
   const getAddress = web3.eth.accounts.privateKeyToAccount(private_key);
   return getAddress.address;
+}
+
+export function convertToSatoshi(value) {
+  return Math.round(value * 100000000);
+}
+
+export function convertFromSatoshi(value) {
+  return parseFloat(value) / 1e8;
 }
