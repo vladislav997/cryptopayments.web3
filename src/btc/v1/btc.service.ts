@@ -1,6 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { catchError, map, of } from 'rxjs';
 import axios from 'axios';
 import { validate } from 'bitcoin-address-validation';
 import {
@@ -11,10 +9,8 @@ import * as bitcoin from 'bitcoinjs-lib';
 
 @Injectable()
 export class BtcServiceV1 {
-  private apiBlockcypherUrl = 'https://api.blockcypher.com/v1/btc/main';
   private apiBlockchairUrl = 'https://api.blockchair.com/bitcoin';
-
-  constructor(private readonly httpService: HttpService) {}
+  private apiBitcoinfees = 'https://bitcoinfees.earn.com/api/v1';
 
   getAddressFromPrivateKey(privateKey) {
     // WIF (Wallet Import Format)
@@ -28,13 +24,15 @@ export class BtcServiceV1 {
     return address;
   }
 
-  async calculateAverageFee() {
+  async averageFee() {
     try {
-      const response = await this.httpService
-        .get('https://bitcoinfees.earn.com/api/v1/fees/recommended')
-        .toPromise();
-
+      const response = await axios.get(
+        this.apiBitcoinfees + '/fees/recommended',
+      );
       return response.data.hourFee;
+
+      // const response = await axios.get(this.apiBlockchairUrl + '/stats');
+      // return response.data.data.suggested_transaction_fee_per_byte_sat;
     } catch (e) {
       throw new HttpException(
         {
@@ -48,40 +46,39 @@ export class BtcServiceV1 {
     }
   }
 
-  async getPreviousTransactionHashAndOutputIndex(address, amount) {
+  async getPreviousTransactionHashAndOutputIndex(address) {
     try {
-      const response = await axios.get(
-        this.apiBlockcypherUrl + `/addrs/${address}/full`,
-      );
-      const data = response.data;
+      const transactionsFull = await this.transactionsFull(address);
+      const transactions = Object.values(transactionsFull.data);
 
-      if (data.txs.length === 0) {
-        throw new HttpException(
-          'No previous transactions found',
-          HttpStatus.BAD_REQUEST,
-        );
+      let previousTransactionHash = null;
+      let previousOutputIndex = null;
+
+      // перебираем все транзакции в обратном порядке
+      for (let i = transactions.length - 1; i >= 0; i--) {
+        const transaction = transactions[i];
+
+        // проверяем, содержит ли выход указанный адрес
+        const previousOutput = transaction[
+          Object.keys(transaction)[0]
+        ].outputs.find((output) => output.recipient === address);
+
+        // если выход найден, сохраняем хэш предыдущей транзакции и индекс выхода
+        if (previousOutput) {
+          previousTransactionHash = Object.keys(transaction)[0];
+          previousOutputIndex = previousOutput.index;
+          break; // выходим из цикла, так как уже нашли предыдущую транзакцию
+        }
       }
 
-      // получаем последнюю предыдущую транзакцию
-      const previousTransaction = data.txs[data.txs.length - 1];
-
-      // ищем выход, который содержит указанный адрес
-      const previousOutput = previousTransaction.outputs.find((output) =>
-        output.addresses.includes(address),
-      );
-
-      // проверяем, найден ли предыдущий выход
-      if (!previousOutput) {
-        throw new HttpException(
-          'Previous output not found',
-          HttpStatus.BAD_REQUEST,
-        );
+      // если не найдено предыдущих транзакций, выбрасываем исключение
+      if (previousTransactionHash === null || previousOutputIndex === null) {
+        throw new Error('No previous transactions found');
       }
 
       return {
-        previousTransactionHash: previousTransaction.hash,
-        previousOutputIndex:
-          previousTransaction.outputs.indexOf(previousOutput),
+        previousTransactionHash,
+        previousOutputIndex,
       };
     } catch (e) {
       throw new HttpException(
@@ -142,12 +139,14 @@ export class BtcServiceV1 {
         throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
 
-      const url = this.apiBlockchairUrl + '/dashboards/address/' + address;
-      const response = await axios.get(url, {
-        params: {
-          key: process.env.BLOCKCHAIR_APIKEY,
+      const response = await axios.get(
+        this.apiBlockchairUrl + '/dashboards/address/' + address,
+        {
+          params: {
+            key: process.env.BLOCKCHAIR_APIKEY,
+          },
         },
-      });
+      );
       const balanceData = response.data.data[address]?.address || null;
 
       const balance = balanceData.balance;
@@ -173,7 +172,7 @@ export class BtcServiceV1 {
     try {
       const address = this.getAddressFromPrivateKey(sendBtcDto.private_key);
       const toAddress = sendBtcDto.to_address;
-      const feePerByte = sendBtcDto.fee || (await this.calculateAverageFee());
+      const feePerByte = sendBtcDto.fee || (await this.averageFee());
 
       if (!validate(toAddress)) {
         throw new HttpException(
@@ -184,10 +183,7 @@ export class BtcServiceV1 {
 
       // получаем хэш предыдущей транзакции и индекс выхода, связанные с указанным адресом
       const { previousTransactionHash, previousOutputIndex } =
-        await this.getPreviousTransactionHashAndOutputIndex(
-          address,
-          sendBtcDto.amount,
-        );
+        await this.getPreviousTransactionHashAndOutputIndex(address);
 
       if (previousOutputIndex === undefined) {
         throw new HttpException(
@@ -266,39 +262,36 @@ export class BtcServiceV1 {
         );
       }
 
-      return this.httpService
+      return axios
         .post(this.apiBlockchairUrl + '/push/transaction', {
           data: hexTransaction,
         })
-        .pipe(
-          map((response) => {
-            return {
-              is_success_transaction: true,
-              transaction_id: response.data.hash,
-              from: address,
-              to: sendBtcDto.to_address,
-              value: String(sendBtcDto.amount),
-              timestamp: String(Date.now()),
-            };
-          }),
-          catchError((error) => {
-            const errorMessage = error.response.data.context.error.toString();
+        .then((response) => {
+          return {
+            is_success_transaction: true,
+            transaction_id: response.data.hash,
+            from: address,
+            to: sendBtcDto.to_address,
+            value: String(sendBtcDto.amount),
+            timestamp: String(Date.now()),
+          };
+        })
+        .catch((e) => {
+          const errorMessage = e.response.data.context.error.toString();
 
-            if (
-              errorMessage == 'Invalid transaction. Error: txn-mempool-conflict'
-            ) {
-              return of({
-                status: false,
-                message:
-                  'You have an incomplete transaction. Wait until the previous transaction is completed',
-              });
-            }
-            return of({
-              status: false,
-              message: errorMessage,
-            });
-          }),
-        );
+          if (
+            errorMessage == 'Invalid transaction. Error: txn-mempool-conflict'
+          ) {
+            throw new HttpException(
+              'You have an incomplete transaction. Wait until the previous transaction is completed',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+          }
+          throw new HttpException(
+            errorMessage,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
     } catch (e) {
       throw new HttpException(
         {
@@ -314,16 +307,16 @@ export class BtcServiceV1 {
 
   async transaction(transactionBtcDto) {
     try {
-      const url =
+      const response = await axios.get(
         this.apiBlockchairUrl +
-        '/dashboards/transaction/' +
-        transactionBtcDto.hash;
-
-      const response = await axios.get(url, {
-        params: {
-          key: process.env.BLOCKCHAIR_APIKEY,
+          '/dashboards/transaction/' +
+          transactionBtcDto.hash,
+        {
+          params: {
+            key: process.env.BLOCKCHAIR_APIKEY,
+          },
         },
-      });
+      );
       const transactionData = response.data.data[transactionBtcDto.hash];
       const transaction = transactionData.transaction;
       const input = transactionData.inputs[0];
@@ -354,13 +347,14 @@ export class BtcServiceV1 {
         throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
 
-      const url = this.apiBlockchairUrl + '/dashboards/address/' + address;
-
-      const response = await axios.get(url, {
-        params: {
-          key: process.env.BLOCKCHAIR_APIKEY,
+      const response = await axios.get(
+        this.apiBlockchairUrl + '/dashboards/address/' + address,
+        {
+          params: {
+            key: process.env.BLOCKCHAIR_APIKEY,
+          },
         },
-      });
+      );
       const data = response.data.data[address];
 
       if (!data) {
@@ -394,5 +388,50 @@ export class BtcServiceV1 {
         },
       );
     }
+  }
+
+  async transactionFull(hash) {
+    try {
+      const response = await axios.get(
+        this.apiBlockchairUrl + '/dashboards/transaction/' + hash,
+        {
+          params: {
+            key: process.env.BLOCKCHAIR_APIKEY,
+          },
+        },
+      );
+      return response.data;
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async transactionsFull(address) {
+    const response = await axios.get(
+      this.apiBlockchairUrl + '/dashboards/address/' + address,
+      {
+        params: {
+          key: process.env.BLOCKCHAIR_APIKEY,
+        },
+      },
+    );
+    const data = response.data.data[address];
+
+    const transactions = data.transactions;
+    const transactionList = [];
+
+    for (const hash of transactions) {
+      const transactionData = await this.transactionFull(hash);
+      const transaction = transactionData.data;
+
+      transactionList.push({
+        ...transaction,
+      });
+    }
+
+    return {
+      status: true,
+      data: transactionList,
+    };
   }
 }

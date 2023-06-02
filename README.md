@@ -38,9 +38,9 @@ For BTC:
 send transaction /
 get previous transaction hash /
 check balance
-(❗️there are limitations in the free version)
+(❗it's a paid api)
 ```html
-https://blockcypher.com
+https://blockchair.com
 ```
 
 ## Running the app
