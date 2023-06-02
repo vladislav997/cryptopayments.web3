@@ -1,4 +1,12 @@
-import { Controller, Post, Body, ValidationPipe, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  HttpCode,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { TrcServiceV1 } from './trc.service';
 import { BalanceTrcDto } from './dto/balance-trc.dto';
 import { SendTrcDto } from './dto/send-trc.dto';
@@ -18,9 +26,9 @@ export class TrcControllerV1 {
     return this.trcService.create();
   }
 
-  @Post('/balance')
+  @Get('/balance')
   @HttpCode(200)
-  balance(@Body(new ValidationPipe()) balanceTrcDto: BalanceTrcDto) {
+  balance(@Query(new ValidationPipe()) balanceTrcDto: BalanceTrcDto) {
     return this.trcService.balance(balanceTrcDto);
   }
 
@@ -38,10 +46,10 @@ export class TrcControllerV1 {
     return this.trcService.transaction(transactionTrcDto);
   }
 
-  @Post('/transactions')
+  @Get('/transactions')
   @HttpCode(200)
   transactions(
-    @Body(new ValidationPipe()) transactionsTrcDto: TransactionsTrcDto,
+    @Query(new ValidationPipe()) transactionsTrcDto: TransactionsTrcDto,
   ) {
     return this.trcService.transactions(transactionsTrcDto);
   }

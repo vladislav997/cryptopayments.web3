@@ -26,9 +26,9 @@ export class BtcControllerV1 {
     return this.btcService.create();
   }
 
-  @Post('/balance')
+  @Get('/balance')
   @HttpCode(200)
-  balance(@Body(new ValidationPipe()) balanceBrcDto: BalanceBtcDto) {
+  balance(@Query(new ValidationPipe()) balanceBrcDto: BalanceBtcDto) {
     return this.btcService.balance(balanceBrcDto);
   }
 
