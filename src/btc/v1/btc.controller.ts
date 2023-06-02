@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { BtcServiceV1 } from './btc.service';
@@ -37,15 +38,15 @@ export class BtcControllerV1 {
     return this.btcService.send(sendBtcDto);
   }
 
-  @Post('/transaction')
+  @Get('/transaction')
   @HttpCode(200)
-  transaction(@Body(new ValidationPipe()) transactionBtcDto: TransactionBtcDto) {
+  transaction(@Query(new ValidationPipe()) transactionBtcDto: TransactionBtcDto) {
     return this.btcService.transaction(transactionBtcDto);
   }
 
-  @Post('/transactions')
+  @Get('/transactions')
   @HttpCode(200)
-  transactions(@Body(new ValidationPipe()) transactionsBtcDto: TransactionsBtcDto) {
+  transactions(@Query(new ValidationPipe()) transactionsBtcDto: TransactionsBtcDto) {
     return this.btcService.transactions(transactionsBtcDto);
   }
 

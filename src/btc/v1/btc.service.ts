@@ -80,7 +80,10 @@ export class BtcServiceV1 {
 
       // если не найдено предыдущих транзакций, выбрасываем исключение
       if (previousTransactionHash === null || previousOutputIndex === null) {
-        throw new Error('No previous transactions found');
+        throw new HttpException(
+          'No previous transactions found',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return {
@@ -179,7 +182,8 @@ export class BtcServiceV1 {
     try {
       const address = this.getAddressFromPrivateKey(sendBtcDto.private_key);
       const toAddress = sendBtcDto.to_address;
-      const feePerByte = sendBtcDto.fee || (await this.averageFee()).data.satoshi;
+      const feePerByte =
+        sendBtcDto.fee || (await this.averageFee()).data.satoshi;
 
       if (!validate(toAddress)) {
         throw new HttpException(
