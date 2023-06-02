@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { catchError, map, throwError } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import axios, { AxiosResponse } from 'axios';
 import { validate } from 'bitcoin-address-validation';
 import {
@@ -12,6 +12,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 @Injectable()
 export class BtcServiceV1 {
   private apiBlockcypherUrl = 'https://api.blockcypher.com/v1/btc/main';
+  private apiBlockchairUrl = 'https://api.blockchair.com/bitcoin';
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -28,67 +29,26 @@ export class BtcServiceV1 {
   }
 
   async calculateAverageFee() {
-    const response = await this.httpService
-      .get('https://bitcoinfees.earn.com/api/v1/fees/recommended')
-      .toPromise();
-
-    return response.data.hourFee;
-  }
-
-  async calculateAvgPerKbFee(size) {
-    const response = await this.httpService
-      .get(this.apiBlockcypherUrl)
-      .toPromise();
-
-    const feePerKb = response.data.low_fee_per_kb;
-
-    const fee = feePerKb * Math.ceil(size / 1024);
-
-    return fee;
-  }
-
-  async calculatePreviousInputsFee(address) {
-    const { previousTransactionHash, previousOutputIndex } =
-      await this.getPreviousTransactionHashAndOutputIndex(address);
-
-    if (
-      previousTransactionHash === undefined ||
-      previousOutputIndex === undefined
-    ) {
-      throw new HttpException(
-        'Previous transaction data not found',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // получение предыдущей транзакции
-    const previousTransaction = await this.getTransaction(
-      previousTransactionHash,
-    );
-
-    // получение предыдущего выхода
-    const previousOutput = previousTransaction.outputs[previousOutputIndex];
-
-    // расчет комиссии от предыдущего входа
-    const inputFee = previousOutput.value;
-
-    return inputFee;
-  }
-
-  async getTransaction(transactionHash) {
     try {
-      const response = await axios.get(
-        this.apiBlockcypherUrl + `/txs/${transactionHash}`,
-      );
-      const transaction = response.data;
+      const response = await this.httpService
+        .get('https://bitcoinfees.earn.com/api/v1/fees/recommended')
+        .toPromise();
 
-      return transaction;
+      return response.data.hourFee;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
     }
   }
 
-  async getPreviousTransactionHashAndOutputIndex(address) {
+  async getPreviousTransactionHashAndOutputIndex(address, amount) {
     try {
       const response = await axios.get(
         this.apiBlockcypherUrl + `/addrs/${address}/full`,
@@ -174,9 +134,9 @@ export class BtcServiceV1 {
     }
   }
 
-  async balance(balanceBrcDto) {
+  async balance(balanceBtcDto) {
     try {
-      const address = balanceBrcDto.address;
+      const address = balanceBtcDto.address;
 
       if (!validate(address)) {
         return {
@@ -185,9 +145,16 @@ export class BtcServiceV1 {
         };
       }
 
-      const url = this.apiBlockcypherUrl + `/addrs/${address}/balance`;
-      const response = await this.httpService.get(url).toPromise();
-      const balance = response.data.balance;
+      const url =
+        this.apiBlockchairUrl +
+        '/dashboards/address/' +
+        address +
+        '?key=' +
+        process.env.BLOCKCHAIR_APIKEY;
+      const response = await axios.get(url);
+      const balanceData = response.data.data[address]?.address || null;
+
+      const balance = balanceData.balance;
 
       return {
         status: true,
@@ -221,7 +188,10 @@ export class BtcServiceV1 {
 
       // получаем хэш предыдущей транзакции и индекс выхода, связанные с указанным адресом
       const { previousTransactionHash, previousOutputIndex } =
-        await this.getPreviousTransactionHashAndOutputIndex(address);
+        await this.getPreviousTransactionHashAndOutputIndex(
+          address,
+          sendBtcDto.amount,
+        );
 
       if (previousOutputIndex === undefined) {
         throw new HttpException(
@@ -289,7 +259,7 @@ export class BtcServiceV1 {
       // приводим общую сумму платежа в числовой формат
       const totalPayFormat = parseFloat(totalPay);
 
-      // получаем баланс пользователя
+      // получаем баланс пользователя с учетом неподтвержденных транзакций
       const userBalance = await this.balance({ address });
 
       // проверяем баланс пользователя
@@ -301,8 +271,8 @@ export class BtcServiceV1 {
       }
 
       return this.httpService
-        .post(this.apiBlockcypherUrl + '/txs/push', {
-          tx: hexTransaction,
+        .post(this.apiBlockchairUrl + '/push/transaction', {
+          data: hexTransaction,
         })
         .pipe(
           map((response) => {
@@ -316,20 +286,106 @@ export class BtcServiceV1 {
             };
           }),
           catchError((error) => {
-            if (error.response) {
-              if (
-                error.response.data.error ===
-                'Error validating transaction: insufficient priority and fee for relay.'
-              ) {
-                return throwError('Insufficient coin balance');
-              } else {
-                return throwError(error.response.data.error);
-              }
-            } else {
-              return throwError('Transaction failed');
+            const errorMessage = error.response.data.context.error.toString();
+
+            if (
+              errorMessage == 'Invalid transaction. Error: txn-mempool-conflict'
+            ) {
+              return of({
+                status: false,
+                message:
+                  'You have an incomplete transaction. Wait until the previous transaction is completed',
+              });
             }
+            return of({
+              status: false,
+              message: errorMessage,
+            });
           }),
         );
+    } catch (e) {
+      throw new HttpException(
+        {
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
+  async transaction(transactionBtcDto) {
+    try {
+      const url =
+        this.apiBlockchairUrl +
+        '/dashboards/transaction/' +
+        transactionBtcDto.hash +
+        '?key=' +
+        process.env.BLOCKCHAIR_APIKEY;
+
+      const response = await axios.get(url);
+      const transactionData = response.data.data[transactionBtcDto.hash];
+      const transaction = transactionData.transaction;
+      const input = transactionData.inputs[0];
+      const output = transactionData.outputs[0];
+
+      return {
+        status: true,
+        data: {
+          is_success_transaction: transaction.block_id !== -1,
+          transaction_id: transaction.hash,
+          from: input.recipient,
+          to: output.recipient,
+          value: convertFromSatoshi(output.value),
+          fee: convertFromSatoshi(transaction.fee),
+          timestamp: new Date(transaction.time).getTime(),
+        },
+      };
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async transactions(transactionsBtcDto) {
+    try {
+      const address = transactionsBtcDto.address;
+
+      if (!validate(address)) {
+        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+      }
+
+      const url =
+        this.apiBlockchairUrl +
+        '/dashboards/address/' +
+        address +
+        '?key=' +
+        process.env.BLOCKCHAIR_APIKEY;
+
+      const response = await axios.get(url);
+      const data = response.data.data[address];
+
+      if (!data) {
+        throw new HttpException('Address not found', HttpStatus.BAD_REQUEST);
+      }
+
+      const transactions = data.transactions;
+      const transactionList = [];
+
+      for (const hash of transactions) {
+        const transactionData = await this.transaction({ hash });
+        const transaction = transactionData.data;
+
+        transactionList.push({
+          ...transaction,
+        });
+      }
+
+      return {
+        status: true,
+        data: transactionList,
+      };
     } catch (e) {
       throw new HttpException(
         {

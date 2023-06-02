@@ -22,13 +22,13 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
     const getStatus = getStatusCode<T>(exception);
     const getMessage = getErrorMessage<T>(exception);
     const statusCode =
-      exception['cause'] && exception['cause']['status']
-        ? exception['cause']['status']
+      exception && exception['cause']?.status !== undefined
+        ? exception['cause'].status
         : getStatus;
     let message =
-      exception['response'] && exception['response']['message']
+      exception && exception['response'] && exception['response']['message']
         ? exception['response']['message']
-        : exception['options'] && exception['options']['cause']
+        : exception && exception['options'] && exception['options']['cause']
         ? exception['options']['cause']
         : getMessage;
 
