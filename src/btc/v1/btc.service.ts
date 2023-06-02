@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, map, of } from 'rxjs';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { validate } from 'bitcoin-address-validation';
 import {
   convertFromSatoshi,
@@ -139,19 +139,15 @@ export class BtcServiceV1 {
       const address = balanceBtcDto.address;
 
       if (!validate(address)) {
-        return {
-          status: false,
-          message: 'Incorrect address',
-        };
+        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
 
-      const url =
-        this.apiBlockchairUrl +
-        '/dashboards/address/' +
-        address +
-        '?key=' +
-        process.env.BLOCKCHAIR_APIKEY;
-      const response = await axios.get(url);
+      const url = this.apiBlockchairUrl + '/dashboards/address/' + address;
+      const response = await axios.get(url, {
+        params: {
+          key: process.env.BLOCKCHAIR_APIKEY,
+        },
+      });
       const balanceData = response.data.data[address]?.address || null;
 
       const balance = balanceData.balance;
@@ -321,11 +317,13 @@ export class BtcServiceV1 {
       const url =
         this.apiBlockchairUrl +
         '/dashboards/transaction/' +
-        transactionBtcDto.hash +
-        '?key=' +
-        process.env.BLOCKCHAIR_APIKEY;
+        transactionBtcDto.hash;
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        params: {
+          key: process.env.BLOCKCHAIR_APIKEY,
+        },
+      });
       const transactionData = response.data.data[transactionBtcDto.hash];
       const transaction = transactionData.transaction;
       const input = transactionData.inputs[0];
@@ -356,14 +354,13 @@ export class BtcServiceV1 {
         throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
       }
 
-      const url =
-        this.apiBlockchairUrl +
-        '/dashboards/address/' +
-        address +
-        '?key=' +
-        process.env.BLOCKCHAIR_APIKEY;
+      const url = this.apiBlockchairUrl + '/dashboards/address/' + address;
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        params: {
+          key: process.env.BLOCKCHAIR_APIKEY,
+        },
+      });
       const data = response.data.data[address];
 
       if (!data) {
