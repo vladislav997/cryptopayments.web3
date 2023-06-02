@@ -29,7 +29,14 @@ export class BtcServiceV1 {
       const response = await axios.get(
         this.apiBitcoinfees + '/fees/recommended',
       );
-      return response.data.hourFee;
+
+      return {
+        status: true,
+        data: {
+          satoshi: response.data.hourFee,
+          bitcoin: convertFromSatoshi(response.data.hourFee).toFixed(8),
+        },
+      };
 
       // const response = await axios.get(this.apiBlockchairUrl + '/stats');
       // return response.data.data.suggested_transaction_fee_per_byte_sat;
@@ -172,7 +179,7 @@ export class BtcServiceV1 {
     try {
       const address = this.getAddressFromPrivateKey(sendBtcDto.private_key);
       const toAddress = sendBtcDto.to_address;
-      const feePerByte = sendBtcDto.fee || (await this.averageFee());
+      const feePerByte = sendBtcDto.fee || (await this.averageFee()).data.satoshi;
 
       if (!validate(toAddress)) {
         throw new HttpException(

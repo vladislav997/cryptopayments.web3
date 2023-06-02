@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   ValidationPipe,
@@ -46,5 +47,11 @@ export class BtcControllerV1 {
   @HttpCode(200)
   transactions(@Body(new ValidationPipe()) transactionsBtcDto: TransactionsBtcDto) {
     return this.btcService.transactions(transactionsBtcDto);
+  }
+
+  @Get('/avg-fee')
+  @HttpCode(200)
+  averageFee() {
+    return this.btcService.averageFee();
   }
 }
