@@ -55,7 +55,7 @@ export class BtcServiceV1 {
 
   async getPreviousTransactionHashAndOutputIndex(address) {
     try {
-      const transactionsFull = await this.transactionsFull(address);
+      const transactionsFull = await this.transactions({ address }, 'full');
       const transactions = Object.values(transactionsFull.data);
 
       let previousTransactionHash = null;
@@ -316,7 +316,7 @@ export class BtcServiceV1 {
     }
   }
 
-  async transaction(transactionBtcDto) {
+  async transaction(transactionBtcDto, dataType) {
     try {
       const response = await axios.get(
         `${this.apiBlockchairUrl}/dashboards/transaction/${transactionBtcDto.hash}`,
@@ -326,6 +326,11 @@ export class BtcServiceV1 {
           },
         },
       );
+
+      // если тип 'full', тогда возвращаем все данные о транзакции
+      if (dataType === 'full') {
+        return response.data;
+      }
 
       // извлечение данных транзакции из ответа API
       const transactionData = response.data.data[transactionBtcDto.hash];
@@ -350,7 +355,7 @@ export class BtcServiceV1 {
     }
   }
 
-  async transactions(transactionsBtcDto) {
+  async transactions(transactionsBtcDto, dataType) {
     try {
       const address = transactionsBtcDto.address;
 
@@ -379,7 +384,7 @@ export class BtcServiceV1 {
       // обработка каждой транзакции
       for (const hash of transactions) {
         // получение данных о транзакции
-        const transactionData = await this.transaction({ hash });
+        const transactionData = await this.transaction({ hash }, dataType);
         const transaction = transactionData.data;
 
         // добавление транзакции в список
@@ -403,53 +408,5 @@ export class BtcServiceV1 {
         },
       );
     }
-  }
-
-  async transactionFull(hash) {
-    try {
-      const response = await axios.get(
-        `${this.apiBlockchairUrl}/dashboards/transaction/${hash}`,
-        {
-          params: {
-            key: process.env.BLOCKCHAIR_APIKEY,
-          },
-        },
-      );
-      return response.data;
-    } catch (e) {
-      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async transactionsFull(address) {
-    const response = await axios.get(
-      `${this.apiBlockchairUrl}/dashboards/address/${address}`,
-      {
-        params: {
-          key: process.env.BLOCKCHAIR_APIKEY,
-        },
-      },
-    );
-    const data = response.data.data[address];
-
-    const transactions = data.transactions;
-    const transactionList = [];
-
-    // обработка каждой транзакции
-    for (const hash of transactions) {
-      // получение данных о транзакции
-      const transactionData = await this.transactionFull(hash);
-      const transaction = transactionData.data;
-
-      // добавление транзакции в список
-      transactionList.push({
-        ...transaction,
-      });
-    }
-
-    return {
-      status: true,
-      data: transactionList,
-    };
   }
 }

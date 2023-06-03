@@ -41,13 +41,13 @@ export class BtcControllerV1 {
   @Get('/transaction')
   @HttpCode(200)
   transaction(@Query(new ValidationPipe()) transactionBtcDto: TransactionBtcDto) {
-    return this.btcService.transaction(transactionBtcDto);
+    return this.btcService.transaction(transactionBtcDto, 'standard');
   }
 
   @Get('/transactions')
   @HttpCode(200)
   transactions(@Query(new ValidationPipe()) transactionsBtcDto: TransactionsBtcDto) {
-    return this.btcService.transactions(transactionsBtcDto);
+    return this.btcService.transactions(transactionsBtcDto, 'standard');
   }
 
   @Get('/avg-fee')
