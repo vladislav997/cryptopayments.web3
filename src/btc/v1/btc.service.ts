@@ -27,7 +27,7 @@ export class BtcServiceV1 {
   async averageFee() {
     try {
       const response = await axios.get(
-        this.apiBitcoinfees + '/fees/recommended',
+        `${this.apiBitcoinfees}/fees/recommended`,
       );
 
       return {
@@ -150,7 +150,7 @@ export class BtcServiceV1 {
       }
 
       const response = await axios.get(
-        this.apiBlockchairUrl + '/dashboards/address/' + address,
+        `${this.apiBlockchairUrl}/dashboards/address/${address}`,
         {
           params: {
             key: process.env.BLOCKCHAIR_APIKEY,
@@ -274,7 +274,7 @@ export class BtcServiceV1 {
       }
 
       return axios
-        .post(this.apiBlockchairUrl + '/push/transaction', {
+        .post(`${this.apiBlockchairUrl}/push/transaction`, {
           data: hexTransaction,
         })
         .then((response) => {
@@ -319,15 +319,15 @@ export class BtcServiceV1 {
   async transaction(transactionBtcDto) {
     try {
       const response = await axios.get(
-        this.apiBlockchairUrl +
-          '/dashboards/transaction/' +
-          transactionBtcDto.hash,
+        `${this.apiBlockchairUrl}/dashboards/transaction/${transactionBtcDto.hash}`,
         {
           params: {
             key: process.env.BLOCKCHAIR_APIKEY,
           },
         },
       );
+
+      // извлечение данных транзакции из ответа API
       const transactionData = response.data.data[transactionBtcDto.hash];
       const transaction = transactionData.transaction;
       const input = transactionData.inputs[0];
@@ -340,9 +340,9 @@ export class BtcServiceV1 {
           transaction_id: transaction.hash,
           from: input.recipient,
           to: output.recipient,
-          value: convertFromSatoshi(output.value),
-          fee: convertFromSatoshi(transaction.fee),
-          timestamp: new Date(transaction.time).getTime(),
+          value: convertFromSatoshi(output.value).toString(),
+          fee: convertFromSatoshi(transaction.fee).toString(),
+          timestamp: new Date(transaction.time).getTime().toString(),
         },
       };
     } catch (e) {
@@ -359,7 +359,7 @@ export class BtcServiceV1 {
       }
 
       const response = await axios.get(
-        this.apiBlockchairUrl + '/dashboards/address/' + address,
+        `${this.apiBlockchairUrl}/dashboards/address/${address}`,
         {
           params: {
             key: process.env.BLOCKCHAIR_APIKEY,
@@ -368,6 +368,7 @@ export class BtcServiceV1 {
       );
       const data = response.data.data[address];
 
+      // проверка наличия данных для адреса
       if (!data) {
         throw new HttpException('Address not found', HttpStatus.BAD_REQUEST);
       }
@@ -375,10 +376,13 @@ export class BtcServiceV1 {
       const transactions = data.transactions;
       const transactionList = [];
 
+      // обработка каждой транзакции
       for (const hash of transactions) {
+        // получение данных о транзакции
         const transactionData = await this.transaction({ hash });
         const transaction = transactionData.data;
 
+        // добавление транзакции в список
         transactionList.push({
           ...transaction,
         });
@@ -404,7 +408,7 @@ export class BtcServiceV1 {
   async transactionFull(hash) {
     try {
       const response = await axios.get(
-        this.apiBlockchairUrl + '/dashboards/transaction/' + hash,
+        `${this.apiBlockchairUrl}/dashboards/transaction/${hash}`,
         {
           params: {
             key: process.env.BLOCKCHAIR_APIKEY,
@@ -419,7 +423,7 @@ export class BtcServiceV1 {
 
   async transactionsFull(address) {
     const response = await axios.get(
-      this.apiBlockchairUrl + '/dashboards/address/' + address,
+      `${this.apiBlockchairUrl}/dashboards/address/${address}`,
       {
         params: {
           key: process.env.BLOCKCHAIR_APIKEY,
@@ -431,10 +435,13 @@ export class BtcServiceV1 {
     const transactions = data.transactions;
     const transactionList = [];
 
+    // обработка каждой транзакции
     for (const hash of transactions) {
+      // получение данных о транзакции
       const transactionData = await this.transactionFull(hash);
       const transaction = transactionData.data;
 
+      // добавление транзакции в список
       transactionList.push({
         ...transaction,
       });
