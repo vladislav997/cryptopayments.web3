@@ -10,7 +10,6 @@ import * as bitcoin from 'bitcoinjs-lib';
 @Injectable()
 export class BtcServiceV1 {
   private apiBlockchairUrl = 'https://api.blockchair.com/bitcoin';
-  private apiBitcoinfees = 'https://bitcoinfees.earn.com/api/v1';
 
   getAddressFromPrivateKey(privateKey) {
     // WIF (Wallet Import Format)
@@ -26,20 +25,16 @@ export class BtcServiceV1 {
 
   async averageFee() {
     try {
-      const response = await axios.get(
-        `${this.apiBitcoinfees}/fees/recommended`,
-      );
-
+      const response = await axios.get(this.apiBlockchairUrl + '/stats');
       return {
         status: true,
         data: {
-          satoshi: response.data.hourFee,
-          bitcoin: convertFromSatoshi(response.data.hourFee).toFixed(8),
+          satoshi: response.data.data.suggested_transaction_fee_per_byte_sat,
+          bitcoin: convertFromSatoshi(
+            response.data.data.suggested_transaction_fee_per_byte_sat,
+          ).toFixed(8),
         },
       };
-
-      // const response = await axios.get(this.apiBlockchairUrl + '/stats');
-      // return response.data.data.suggested_transaction_fee_per_byte_sat;
     } catch (e) {
       throw new HttpException(
         {
@@ -53,7 +48,7 @@ export class BtcServiceV1 {
     }
   }
 
-  async getPreviousTransactionHashAndOutputIndex(address) {
+  async getPreviousTransactionInfo(address) {
     try {
       const transactionsFull = await this.transactions({ address }, 'full');
       const transactions = Object.values(transactionsFull.data);
@@ -62,7 +57,7 @@ export class BtcServiceV1 {
       let previousOutputIndex = null;
 
       // перебираем все транзакции в обратном порядке
-      for (let i = transactions.length - 1; i >= 0; i--) {
+      for (let i = 0; i < transactions.length; i++) {
         const transaction = transactions[i];
 
         // проверяем, содержит ли выход указанный адрес
@@ -82,6 +77,13 @@ export class BtcServiceV1 {
       if (previousTransactionHash === null || previousOutputIndex === null) {
         throw new HttpException(
           'No previous transactions found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (previousOutputIndex === undefined) {
+        throw new HttpException(
+          'Previous output index is undefined',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -154,6 +156,7 @@ export class BtcServiceV1 {
         {
           params: {
             key: process.env.BLOCKCHAIR_APIKEY,
+            state: 'latest',
           },
         },
       );
@@ -180,8 +183,42 @@ export class BtcServiceV1 {
 
   async send(sendBtcDto) {
     try {
+      // получаем адрес отправителя из Private Key
       const address = this.getAddressFromPrivateKey(sendBtcDto.private_key);
+      // получаем адрес получателя
       const toAddress = sendBtcDto.to_address;
+      // запрос на транзакции отправителя
+      const transactions = await this.transactions({ address }, 'standard');
+
+      // ищем, есть ли неподтвержденные транзакции
+      const unconfirmedTransaction = !!transactions.data.find((transaction) => {
+        return !transaction.is_success_transaction;
+      }) as boolean;
+
+      if (unconfirmedTransaction) {
+        throw new Error(
+          'You cannot send a new transaction if you have an unconfirmed transaction',
+        );
+      }
+
+      // ищем, есть ли уже ранее отправленные транзакции этому получателю
+      const shippingAddresses = !!transactions.data.find((transaction) => {
+        return transaction.to === toAddress;
+      }) as boolean;
+
+      if (shippingAddresses) {
+        throw new Error(
+          'You cannot send a transaction twice to the same address',
+        );
+      }
+
+      if (sendBtcDto.fee < 20) {
+        throw new HttpException(
+          'Fee value is too small',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
       const feePerByte =
         sendBtcDto.fee || (await this.averageFee()).data.satoshi;
 
@@ -194,14 +231,7 @@ export class BtcServiceV1 {
 
       // получаем хэш предыдущей транзакции и индекс выхода, связанные с указанным адресом
       const { previousTransactionHash, previousOutputIndex } =
-        await this.getPreviousTransactionHashAndOutputIndex(address);
-
-      if (previousOutputIndex === undefined) {
-        throw new HttpException(
-          'Previous output index is undefined',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+        await this.getPreviousTransactionInfo(address);
 
       // ------------------------------ //
       //     создание транзакции        //
@@ -219,7 +249,16 @@ export class BtcServiceV1 {
       txb.addOutput(toAddress, convertToSatoshi(sendBtcDto.amount));
 
       // подписываем входную точку транзакции с помощью приватного ключа
-      txb.sign(0, bitcoin.ECPair.fromPrivateKey(privateKeyBuffer));
+      // txb.sign(previousOutputIndex, bitcoin.ECPair.fromPrivateKey(privateKeyBuffer));
+      // txb.sign(0, bitcoin.ECPair.fromPrivateKey(privateKeyBuffer));
+      const signatureHashType =
+        bitcoin.Transaction.SIGHASH_ALL | bitcoin.Transaction.SIGHASH_FORKID;
+      txb.sign(
+        0,
+        bitcoin.ECPair.fromPrivateKey(privateKeyBuffer),
+        null,
+        signatureHashType,
+      );
 
       // создаем полную транзакцию
       const builtTransaction = txb.build();
@@ -242,7 +281,7 @@ export class BtcServiceV1 {
       }
 
       // устанавливаем комиссию для выхода с указанным индексом
-      builtTransaction.outs[previousOutputIndex].value = calculateFee;
+      builtTransaction.fee = calculateFee;
 
       // получаем шестнадцатеричное представление транзакции
       const hexTransaction = builtTransaction.toHex();
