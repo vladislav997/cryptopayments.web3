@@ -1,0 +1,923 @@
+{
+	"info": {
+		"_postman_id": "052748ce-7a45-4d7e-8610-d5ee70883987",
+		"name": "CryptoPaymentsWeb3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TRC",
+			"item": [
+				{
+					"name": "Coin",
+					"item": [
+						{
+							"name": "Balance Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/balance?type=coin&address=TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Coin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"coin\",\n    \"to_address\": \"TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca\",\n    \"amount\": 5,\n    \"private_key\": \"874F38A854A68792716E72885005627C775B43E76ACA153C73B6C504C8D27A18\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/transactions?type=coin&address=TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Token",
+					"item": [
+						{
+							"name": "Balance Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/balance?type=token&address=TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4&contract=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4"
+										},
+										{
+											"key": "contract",
+											"value": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"token\",\n    \"to_address\": \"TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca\",\n    \"amount\": 0.9,\n    \"private_key\": \"874F38A854A68792716E72885005627C775B43E76ACA153C73B6C504C8D27A18\",\n    \"contract\": \"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/trc/transactions?type=token&address=TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4&contract=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"trc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4"
+										},
+										{
+											"key": "contract",
+											"value": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/{{version}}/trc/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"trc",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transaction Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/{{version}}/trc/transaction?txid=54e0ba5373c3825198e590cc61344c1bd1c450ca2076db81099eb78674f812a9",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"trc",
+								"transaction"
+							],
+							"query": [
+								{
+									"key": "txid",
+									"value": "54e0ba5373c3825198e590cc61344c1bd1c450ca2076db81099eb78674f812a9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ERC",
+			"item": [
+				{
+					"name": "Coin",
+					"item": [
+						{
+							"name": "Balance Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/balance?type=coin&address=0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Coin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"coin\",\n    \"to_address\": \"0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb\",\n    \"amount\": 0.009,\n    \"private_key\": \"0x41a6f2df528aadf61f44f2d5ba9b31ca42b58bccf180287e20f3832e11da384c\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/transactions?type=coin&address=0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Token",
+					"item": [
+						{
+							"name": "Balance Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/balance?type=token&address=0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB&contract=0xdac17f958d2ee523a2206206994597c13d831ec7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB"
+										},
+										{
+											"key": "contract",
+											"value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"token\",\n    \"to_address\": \"0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb\",\n    \"amount\": 0.1,\n    \"private_key\": \"0x41a6f2df528aadf61f44f2d5ba9b31ca42b58bccf180287e20f3832e11da384c\",\n    \"contract\": \"0xdac17f958d2ee523a2206206994597c13d831ec7\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/erc/transactions?type=token&address=0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB&contract=0xdac17f958d2ee523a2206206994597c13d831ec7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"erc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB"
+										},
+										{
+											"key": "contract",
+											"value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/{{version}}/erc/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"erc",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BSC",
+			"item": [
+				{
+					"name": "Coin",
+					"item": [
+						{
+							"name": "Balance Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/balance?type=coin&address=0x1eF184bcF572cC240C1CF505949E25977f0E7645",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "0x1eF184bcF572cC240C1CF505949E25977f0E7645"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Coin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"coin\",\n    \"to_address\": \"0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb\",\n    \"amount\": 0.0003,\n    \"private_key\": \"0x1ece5671e21a1fd6a22070e76bd2e0e4af61b59341196aaae67d651d8708634a\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/transactions?type=coin&address=0x1eF184bcF572cC240C1CF505949E25977f0E7645",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "0x1eF184bcF572cC240C1CF505949E25977f0E7645"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Token",
+					"item": [
+						{
+							"name": "Balance Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/balance?type=token&address=0x1eF184bcF572cC240C1CF505949E25977f0E7645&contract=0x55d398326f99059ff775485246999027b3197955",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "0x1eF184bcF572cC240C1CF505949E25977f0E7645"
+										},
+										{
+											"key": "contract",
+											"value": "0x55d398326f99059ff775485246999027b3197955"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"token\",\n    \"to_address\": \"0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb\",\n    \"amount\": 1,\n    \"private_key\": \"0x1ece5671e21a1fd6a22070e76bd2e0e4af61b59341196aaae67d651d8708634a\",\n    \"contract\": \"0x55d398326f99059ff775485246999027b3197955\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/bsc/transactions?type=token&address=0x1eF184bcF572cC240C1CF505949E25977f0E7645&contract=0x55d398326f99059ff775485246999027b3197955",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"bsc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "token"
+										},
+										{
+											"key": "address",
+											"value": "0x1eF184bcF572cC240C1CF505949E25977f0E7645"
+										},
+										{
+											"key": "contract",
+											"value": "0x55d398326f99059ff775485246999027b3197955"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/{{version}}/bsc/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"bsc",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BTC",
+			"item": [
+				{
+					"name": "Coin",
+					"item": [
+						{
+							"name": "Balance Coin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/btc/balance?type=coin&address=1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"btc",
+										"balance"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Coin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"coin\",\n    \"to_address\": \"1BeagGVTY16UHXKQeSxuAire2UQz1KikZ9\",\n    \"amount\": 0.0001,\n    \"private_key\": \"L1KCjefCf1qCNtaVYhu6fDep9et464vYTb39Kjwj4HoXnzokNc9P\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/btc/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"btc",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transactions Coin",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/{{version}}/btc/transactions?type=coin&address=1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"btc",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "coin"
+										},
+										{
+											"key": "address",
+											"value": "1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Avg Fee",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/{{version}}/btc/avg-fee",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"btc",
+										"avg-fee"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/{{version}}/btc/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"btc",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transaction Info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/{{version}}/btc/transaction?type=coin&hash=c4ffc14da1093a4a68216580a2faabee930617ca7665027b63808378cc4f66a4",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"btc",
+								"transaction"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "coin"
+								},
+								{
+									"key": "hash",
+									"value": "c4ffc14da1093a4a68216580a2faabee930617ca7665027b63808378cc4f66a4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:3000",
+			"type": "default"
+		},
+		{
+			"key": "version",
+			"value": "v1",
+			"type": "default"
+		}
+	]
+}

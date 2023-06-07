@@ -1,0 +1,2935 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CryptoPayments.Web3 Documentation</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
+
+    <style>
+        * {font-family: 'Montserrat', -apple-system, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;}
+
+        .substr {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        p {
+            line-height: 2;
+        }
+        p.description {
+            font-size: 14px;
+            line-height: 1.5 !important;
+        }
+
+        a {
+            color: #00B388 !important;
+        }
+
+        nav a {
+            color: #fff !important;
+            display: block;
+            transition: all 0.2s ease;
+            padding: 10px;
+            font-size: .9em;
+        }
+        nav a:hover {
+            background: #00242d;
+            text-decoration: none;
+            color: #fff;
+        }
+        a.active {
+            background: #00242d;
+        }
+        .pre-style {
+            background: #00303C !important;
+            border: none !important;
+            margin-top: 0 !important;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            max-height: 200px;
+            overflow: auto;
+        }
+        .code-style {
+            font-family: monospace !important;
+            color: #65D289;
+        }
+        .code-header {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            line-height: 1.428571429;
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+            border: 0;
+            outline: 0;
+            vertical-align: baseline;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .6em 1em;
+            border-radius: 4px 4px 0 0;
+            font-family: monospace;
+            font-size: .8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            user-select: none;
+            background: #003D4C;
+            color: #D9D9D6;
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 20px;
+        }
+        .uk-tab>*>a {
+            text-transform: none;
+        }
+
+        .attributes-table--title {
+            display: flex;
+            align-items: baseline;
+        }
+        .attributes-table--title-field {
+            font-family: monospace !important;
+            font-size: .9em;
+            color: #FFFFFF;
+        }
+        .attributes-table--title-type {
+            text-transform: lowercase;
+            color: #86867C;
+        }
+        .attributes-table--title-required {
+            color: #f0506e;
+        }
+
+        .uk-table th {
+            text-transform: none;
+        }
+        .uk-table th, .uk-table td {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+<div uk-grid>
+    <div class="uk-width-1-5" style="border-right: 4px solid #00181e;">
+            <div style="position: fixed;height: 100%;overflow-y: auto;width:inherit;background: #00181e;">
+                <h4 class="uk-text-center uk-text-bold" style="color: #fff;margin-top: 20px;margin-bottom: 0;">CryptoPayments.Web3</h4>
+                <div class="uk-flex uk-flex-center">
+                    <span style="color: #fff;">v1</span>
+                </div>
+                <hr style="opacity: .3" />
+                <nav>
+                    <a href="#create">Create</a>
+                    <a href="#balance">Balance</a>
+                    <a href="#send">Send</a>
+                    <a href="#transactions">Transactions</a>
+                </nav>
+            </div>
+    </div>
+    <div class="uk-width-4-5 uk-light" style="background: #00242d">
+
+        <div class="sections" style="padding-bottom: 200px;">
+
+            <section id="create" class="uk-section-small uk-container">
+                <h2 class="uk-text-bold">Create</h2>
+
+                <ul class="uk-tab" uk-tab="{connect:'#create-tabs'}">
+                    <li class="uk-active"><a href="">BTC</a></li>
+                    <li><a href="">TRC</a></li>
+                    <li><a href="">ERC</a></li>
+                    <li><a href="">BSC</a></li>
+                </ul>
+
+                <ul id="create-tabs" class="uk-switcher uk-margin">
+                    <!-- BTC -->
+                    <li>
+                        <div class="uk-child-width-1-2" uk-grid>
+                            <div>
+                                <div class="sticky">
+                                    <p>
+                                        With this method you can create a wallet.
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="code-header">
+                                    <div>Request</div>
+                                </div>
+                                <pre class="pre-style"><code class="code-style">POST: /api/v1/btc/create</code></pre>
+
+                                <div class="code-header">
+                                    <div>Response (201)</div>
+                                </div>
+                                <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "address": "1CFxhBAggzfPBopVUTWmiYDc5Ru7viKmkL",
+        "privateKey": "L3K1AFeNMuvM9mUAQsnMRGRVoShcKzMHhei8BWXdkzhb56Y257GN",
+        "publicKey": "02217af9d744a799079029d16bff72e5ba5483598ba7a53baa8f7fca748a3c51c3"
+    }
+}</code></pre>
+                            </div>
+
+                        </div>
+                    </li>
+                    <!-- TRC -->
+                    <li>
+                        <div class="uk-child-width-1-2" uk-grid>
+                            <div>
+                                <div class="sticky">
+                                    <p>
+                                        With this method you can create a wallet.
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                    <div class="code-header">
+                                        <div>Request</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">POST: /api/v1/trc/create</code></pre>
+
+                                    <div class="code-header">
+                                        <div>Response (201)</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "address": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+        "privateKey": "874F38A854A68792716E72885005627C775B43E76ACA153C73B6C504C8D27A18",
+        "publicKey": "045D1E4766BC38F266F7C8E47780EBB5D0AAA5DE580EAFD5C566F249733CAD9C1AE2693B893349DBD43AC2286C43F521D2EEC7FC3DA8C131DFCF46A722C765A6D2"
+    }
+}</code></pre>
+                            </div>
+
+                        </div>
+                    </li>
+                    <!-- ERC -->
+                    <li>
+                        <div class="uk-child-width-1-2" uk-grid>
+                            <div>
+                                <div class="sticky">
+                                    <p>
+                                        With this method you can create a wallet.
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                    <div class="code-header">
+                                        <div>Request</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">POST: /api/v1/erc/create</code></pre>
+
+                                    <div class="code-header">
+                                        <div>Response (201)</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "address": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+        "privateKey": "0x41a6f2df528aadf61f44f2d5ba9b31ca42b58bccf180287e20f3832e11da384c",
+    }
+}</code></pre>
+                            </div>
+
+                        </div>
+                    </li>
+                    <!-- BSC -->
+                    <li>
+                        <div class="uk-child-width-1-2" uk-grid>
+                            <div>
+                                <div class="sticky">
+                                    <p>
+                                        With this method you can create a wallet.
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                    <div class="code-header">
+                                        <div>Request</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">POST: /api/v1/bsc/create</code></pre>
+
+                                    <div class="code-header">
+                                        <div>Response (201)</div>
+                                    </div>
+                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "address": "0x1eF184bcF572cC240C1CF505949E25977f0E7645",
+        "privateKey": "0x1ece5671e21a1fd6a22070e76bd2e0e4af61b59341196aaae67d651d8708634a",
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </section>
+
+            <section id="balance" class="uk-section-small uk-container">
+                <h2 class="uk-text-bold">Balance</h2>
+
+                <ul class="uk-tab" uk-tab="{connect:'#balance-tabs'}">
+                    <li class="uk-active"><a href="">BTC</a></li>
+                    <li><a href="">TRC</a></li>
+                    <li><a href="">ERC</a></li>
+                    <li><a href="">BSC</a></li>
+                </ul>
+                <ul id="balance-tabs" class="uk-switcher uk-margin">
+                    <!-- BTC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#btc-balance-tabs'}">
+                            <li class="uk-active"><a href="">Coin</a></li>
+                        </ul>
+
+                        <ul id="btc-balance-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+
+                                        <div class="sticky">
+                                            <h4>Params</h4>
+
+                                            <div class="uk-overflow-auto">
+                                                <table class="uk-table uk-table-small uk-table-divider">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Field</th>
+                                                        <th>Data type</th>
+                                                        <th>Values</th>
+                                                        <th>Required</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">type</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td>
+                                                            coin
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">address</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div>
+
+                                        <div class="code-header">
+                                            <div>Request</div>
+                                        </div>
+                                        <pre class="pre-style"><code class="code-style">GET: /api/v1/btc/balance?type=coin&address={address}</code></pre>
+
+                                        <ul class="uk-tab" uk-tab="{connect:'#balance-errors-btc-coin-tabs'}">
+                                            <li class="uk-active"><a href="">200</a></li>
+                                            <li><a href="">400</a></li>
+                                        </ul>
+                                        <ul id="balance-errors-btc-coin-tabs" class="uk-switcher uk-margin">
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (200)</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 0.0001
+}</code></pre>
+                                            </li>
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (400): Incorrect address</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- TRC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#trc-balance-tabs'}">
+                            <li class="uk-active"><a href="">Coin (TRX)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="trc-balance-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        coin
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        </div>
+                                    </div>
+                                    <div>
+
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/trc/balance?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-trc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-trc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/trc/balance?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-trc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-trc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- ERC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#erc-balance-tabs'}">
+                            <li class="uk-active"><a href="">Coin (ETH)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="erc-balance-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        coin
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/balance?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-erc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-erc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/balance?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-erc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-erc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- BSC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#bsc-balance-tabs'}">
+                            <li class="uk-active"><a href="">Coin (BNB)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="bsc-balance-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>coin</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/bsc/balance?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-bsc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-bsc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/bsc/balance?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#balance-errors-bsc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="balance-errors-bsc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": 5.000001
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="send" class="uk-section-small uk-container">
+                <h2 class="uk-text-bold">Send</h2>
+
+                <ul class="uk-tab" uk-tab="{connect:'#send-tabs'}">
+                    <li class="uk-active"><a href="">BTC</a></li>
+                    <li><a href="">TRC</a></li>
+                    <li><a href="">ERC</a></li>
+                    <li><a href="">BSC</a></li>
+                </ul>
+                <ul id="send-tabs" class="uk-switcher uk-margin">
+                    <!-- BTC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#btc-send-tabs'}">
+                            <li class="uk-active"><a href="">Coin</a></li>
+                        </ul>
+
+                        <ul id="btc-send-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                            <h4>Body params</h4>
+
+                                            <div class="uk-overflow-auto">
+                                                <table class="uk-table uk-table-small uk-table-divider">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Field</th>
+                                                        <th>Data type</th>
+                                                        <th>Values</th>
+                                                        <th>Required</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">type</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td>
+                                                            coin
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">to_address</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">amount</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">Integer</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">private_key</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">fee</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">integer</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            No
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="code-header">
+                                            <div>Request</div>
+                                        </div>
+                                        <pre class="pre-style"><code class="code-style">POST: /api/v1/btc/send
+{
+    "type": "coin",
+    "to_address": "1CFxhBAggzfPBopVUTWmiYDc5Ru7viKmkL",
+    "amount": 0.5,
+    "private_key": "L3K1AFeNMuvM9mUAQsnMRGRVoShcKzMHhei8BWXdkzhb56Y257GN"
+}</code></pre>
+
+                                        <ul class="uk-tab" uk-tab="{connect:'#send-errors-btc-coin-tabs'}">
+                                            <li class="uk-active"><a href="">200</a></li>
+                                            <li><a href="">400</a></li>
+                                            <li><a href="">500</a></li>
+                                        </ul>
+                                        <ul id="send-errors-btc-coin-tabs" class="uk-switcher uk-margin">
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (200)</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "97b0a1b307b7d2107ef278e55ac590ee136f7279cd6a2ce6be248e1213ca7ebc",
+        "from": "bc1qrc3h2386thcz6ntl82q2kmlu59tx2a3zttzttj",
+        "to": "1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr",
+        "value": "0.5",
+        "timestamp": "1679560582789"
+    }
+}</code></pre>
+                                            </li>
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (400): Incorrect recipient address</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect recipient address"
+}</code></pre>
+
+                                                <div class="code-header">
+                                                    <div>Response (400): Insufficient coin balance</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+                                            </li>
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (500): Incorrect private key</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- TRC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#trc-send-tabs'}">
+                            <li class="uk-active"><a href="">Coin (TRX)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="trc-send-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        coin
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/trc/send
+{
+    "type": "coin",
+    "to_address": "TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca",
+    "amount": 0.5,
+    "private_key": "874F38A854A68792716E72885005627C775B43E76ACA153C73B6C504C8D27A18"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-trc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-trc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "30d853b36454dc4997799b60a3d4fb24ef936b43fc4ad4d39d4e0642a7c6d065",
+        "from": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+        "to": "TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca",
+        "value": "0.5",
+        "timestamp": "1679560582789"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect recipient address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient coin balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/trc/send
+{
+    "type": "token",
+    "to_address": "TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca",
+    "amount": 0.1,
+    "private_key": "874F38A854A68792716E72885005627C775B43E76ACA153C73B6C504C8D27A18",
+    "contract": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-trc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-trc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "99b335a624482332c9949a0dc3c723331aba4abd6a1e1c61144cc837ba982143",
+        "from": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+        "to": "TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca",
+        "value": "0.1",
+        "timestamp": "1679561659041"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect recipient address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- ERC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#erc-send-tabs'}">
+                            <li class="uk-active"><a href="">Coin (ETH)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="erc-send-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        coin
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">gas_limit</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/erc/send
+{
+    "type": "coin",
+    "to_address": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+    "amount": 0.005,
+    "private_key": "0x41a6f2df528aadf61f44f2d5ba9b31ca42b58bccf180287e20f3832e11da384c"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-erc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-erc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "0xd3w2192b1a9b2006d9742fc76ee6565c342dc7cbdf18ab80a408fa773159a28b",
+        "from": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+        "to": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+        "value": "0.005",
+        "timestamp": "1679584191605"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address or recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address or recipient address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient coin balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">gas_limit</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/erc/send
+{
+    "type": "token",
+    "to_address": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+    "amount": 1,
+    "private_key": "0x41a6f2df528aadf61f44f2d5ba9b31ca42b58bccf180287e20f3832e11da384c",
+    "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-erc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-erc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "0x0a19cf71c0b0ce5479925e04cd97f22a301c686bd9ce3e93b2cf7141cc317d1e",
+        "from": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+        "to": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+        "value": "1",
+        "timestamp": "1679584622160"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address or recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address or recipient address"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient coin balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient token balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient token balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- BSC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#bsc-send-tabs'}">
+                            <li class="uk-active"><a href="">Coin (BNB)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="bsc-send-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        coin
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">gas_limit</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/bsc/send
+{
+    "type": "coin",
+    "to_address": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+    "amount": 0.0003,
+    "private_key": "0x1ece5671e21a1fd6a22070e76bd2e0e4af61b59341196aaae67d651d8708634a"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-bsc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-bsc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "0xd8e2192b1a9b2006d9742fc76ee6565c342dc7cbdf18ab80a408fa773159a28b",
+        "from": "0x1eF184bcF572cC240C1CF505949E25977f0E7645",
+        "to": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+        "value": "0.0003",
+        "timestamp": "1679584191605"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address or recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address or recipient address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient coin balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Body params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>
+                                                        token
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">to_address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">amount</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">private_key</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">gas_limit</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">Integer</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">POST: /api/v1/bsc/send
+{
+    "type": "token",
+    "to_address": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+    "amount": 1,
+    "private_key": "0x1ece5671e21a1fd6a22070e76bd2e0e4af61b59341196aaae67d651d8708634a",
+    "contract": "0x55d398326f99059ff775485246999027b3197955"
+}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#send-errors-bsc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                                <li><a href="">500</a></li>
+                                            </ul>
+                                            <ul id="send-errors-bsc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": {
+        "is_success_transaction": true,
+        "transaction_id": "0x0a19cf71c0b0ce5479925e04cd97f22a301c686bd9ce3e93b2cf7141cc317d1e",
+        "from": "0x1eF184bcF572cC240C1CF505949E25977f0E7645",
+        "to": "0x27Be9d9bAc2E7A7BCbe5aD39DcCFf04b02AE0DEb",
+        "value": "1",
+        "timestamp": "1679584622160"
+    }
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address or recipient address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address or recipient address"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient coin balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient coin balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Insufficient token balance</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Insufficient token balance"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (500): Incorrect private key</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect private key"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="transactions" class="uk-section-small uk-container">
+                <h2 class="uk-text-bold">Transactions</h2>
+
+                <ul class="uk-tab" uk-tab="{connect:'#transactions-tabs'}">
+                    <li class="uk-active"><a href="">BTC</a></li>
+                    <li><a href="">TRC</a></li>
+                    <li><a href="">ERC</a></li>
+                    <li><a href="">BSC</a></li>
+                </ul>
+                <ul id="transactions-tabs" class="uk-switcher uk-margin">
+                    <!-- BTC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#btc-transactions-tabs'}">
+                            <li class="uk-active"><a href="">Coin</a></li>
+                        </ul>
+
+                        <ul id="btc-transactions-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+
+                                        <div class="sticky">
+                                            <h4>Params</h4>
+
+                                            <div class="uk-overflow-auto">
+                                                <table class="uk-table uk-table-small uk-table-divider">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Field</th>
+                                                        <th>Data type</th>
+                                                        <th>Values</th>
+                                                        <th>Required</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">type</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td>coin</td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attributes-table--title-field">address</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attributes-table--title-type">String</div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <div class="attributes-table--title-required">Yes</div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="code-header">
+                                            <div>Request</div>
+                                        </div>
+                                        <pre class="pre-style"><code class="code-style">GET: /api/v1/btc/transactions?type=coin&address={address}</code></pre>
+
+                                        <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-btc-coin-tabs'}">
+                                            <li class="uk-active"><a href="">200</a></li>
+                                            <li><a href="">400</a></li>
+                                        </ul>
+                                        <ul id="transactions-errors-btc-coin-tabs" class="uk-switcher uk-margin">
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (200)</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "is_success_transaction": true,
+            "transaction_id": "611b063defbde537bed1ea52228da2ba492de4be41a136011c17850907ffa8c5",
+            "from": "1Hx6a5Fw5JoRg7RLwsKDGDFNm2nQQYyCJr",
+            "to": "18ucJhGY48HNUEwLtLfxx7XMCd2EVnXXFS",
+            "value": "0.0001",
+            "fee": "0.0001",
+            "timestamp": "1686106874000"
+        },
+        ...
+    ]
+}</code></pre>
+                                            </li>
+                                            <li>
+                                                <div class="code-header">
+                                                    <div>Response (400): Incorrect address</div>
+                                                </div>
+                                                <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- TRC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#trc-transactions-tabs'}">
+                            <li class="uk-active"><a href="">Coin (TRX)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="trc-transactions-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>coin</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">payment_type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>["all", "sent", "received"]</td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/trc/transactions?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-trc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-trc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "is_success_transaction": true,
+            "transaction_id": "d61b0153317f8d8dec55402c8de8de493c524c8e775042b38cb93a589dc992c3",
+            "from": "",
+            "to": "",
+            "value": "",
+            "timestamp": "1679069471642"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>token</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">payment_type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>["all", "sent", "received"]</td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/trc/transactions?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-trc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-trc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "token_symbol": "USDT",
+            "transaction_id": "303785d8b73b42b677b3c6d27cd4748fdc1efadb855902d7da38d41334d9d5ff",
+            "from": "TGHLRDJ6LXaHXsk7woGoojZDwQAmmwXqC4",
+            "to": "TBuVLyE5TSPyAWr3gSZZz8h7RjQd5HCuca",
+            "value": "1",
+            "timestamp": "1678730919000"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- ERC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#erc-transactions-tabs'}">
+                            <li class="uk-active"><a href="">Coin (ETH)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="erc-transactions-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>coin</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/transactions?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-erc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-erc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "is_success_transaction": true,
+            "transaction_id": "0x55709640ad40e6777b49d400d11191564f8fddd5caa7bf08bb55ed988d031876",
+            "from": "0x27be9d9bac2e7a7bcbe5ad39dccff04b02ae0deb",
+            "to": "0x2a73a011b45aef6e9146323e9436a2b4c55a98ab",
+            "value": "0.0006",
+            "timestamp": "1678781783"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>token</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/transactions?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-erc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-erc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "token_symbol": "USDT",
+            "transaction_id": "0xfae297e50fcd3a46a0c7992c25323451287b29cfd97af9a484f46bef0c322b9f",
+            "from": "0x27be9d9bac2e7a7bcbe5ad39dccff04b02ae0deb",
+            "to": "0x2a73a011b45aef6e9146323e9436a2b4c55a98ab",
+            "value": "1",
+            "timestamp": "1679075027"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- BSC -->
+                    <li>
+                        <ul class="uk-tab" uk-tab="{connect:'#bsc-transactions-tabs'}">
+                            <li class="uk-active"><a href="">Coin (BNB)</a></li>
+                            <li><a href="">Token (USDT, etc.)</a></li>
+                        </ul>
+
+                        <ul id="bsc-transactions-tabs" class="uk-switcher uk-margin">
+                            <!-- Coin -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>coin</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/transactions?type=coin&address={address}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-bsc-coin-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-bsc-coin-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "is_success_transaction": true,
+            "transaction_id": "0x55709640ad40e6777b49d400d11191564f8fddd5caa7bf08bb55ed988d031876",
+            "from": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+            "to": "0x2a73a011b45aef6e9146323e9436a2b4c55a98ab",
+            "value": "0.0006",
+            "timestamp": "1678781783"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <!-- Token -->
+                            <li>
+                                <div class="uk-child-width-1-2" uk-grid>
+                                    <div>
+                                        <div class="sticky">
+                                        <h4>Params</h4>
+
+                                        <div class="uk-overflow-auto">
+                                            <table class="uk-table uk-table-small uk-table-divider">
+                                                <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Data type</th>
+                                                    <th>Values</th>
+                                                    <th>Required</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">type</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td>token</td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">address</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="attributes-table--title-field">contract</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="attributes-table--title-type">String</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="attributes-table--title-required">Yes</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                            <div class="code-header">
+                                                <div>Request</div>
+                                            </div>
+                                            <pre class="pre-style"><code class="code-style">GET: /api/v1/erc/transactions?type=token&address={address}&contract={contract}</code></pre>
+
+                                            <ul class="uk-tab" uk-tab="{connect:'#transactions-errors-bsc-token-tabs'}">
+                                                <li class="uk-active"><a href="">200</a></li>
+                                                <li><a href="">400</a></li>
+                                            </ul>
+                                            <ul id="transactions-errors-bsc-token-tabs" class="uk-switcher uk-margin">
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (200)</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": true,
+    "data": [
+        {
+            "token_symbol": "BSC-USD",
+            "transaction_id": "0xb4cb3d22945587a2ae1a1fedffd8929e42c87744daee15f2763abebd72792119",
+            "from": "0x2a73a011b45AEf6E9146323E9436a2b4C55a98aB",
+            "to": "0x1ef184bcf572cc240c1cf505949e25977f0e7645",
+            "value": "1",
+            "timestamp": "1679075027"
+        },
+        ...
+    ]
+}</code></pre>
+                                                </li>
+                                                <li>
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect address"
+}</code></pre>
+
+                                                    <div class="code-header">
+                                                        <div>Response (400): Incorrect contract address</div>
+                                                    </div>
+                                                    <pre class="pre-style"><code class="code-style">{
+    "status": false,
+    "message": "Incorrect contract address"
+}</code></pre>
+                                                </li>
+                                            </ul>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+
+<script>
+    var sections = $('section')
+        , nav = $('nav')
+        , nav_height = 0;
+
+    console.log(nav_height)
+
+    $(window).on('scroll', function () {
+        var cur_pos = $(this).scrollTop();
+
+        sections.each(function() {
+            var top = $(this).offset().top - nav_height,
+                bottom = top + $(this).outerHeight();
+
+            if (cur_pos >= top && cur_pos <= bottom) {
+                nav.find('a').removeClass('active');
+                sections.removeClass('active');
+
+                $(this).addClass('active');
+                nav.find('a[href="#'+$(this).attr('id')+'"]').addClass('active');
+            }
+        });
+    });
+
+    nav.find('a').on('click', function () {
+        var $el = $(this)
+            , id = $el.attr('href');
+
+        $('html, body').animate({
+            scrollTop: $(id).offset().top - nav_height
+        }, 500);
+
+        return false;
+    });
+</script>

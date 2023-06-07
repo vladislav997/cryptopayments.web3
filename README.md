@@ -10,6 +10,9 @@ $ cp .env.development .env
 $ npm install
 ```
 
+## Documentation
+See docs/ directory
+
 ## Set up
 
 ### Used API:
@@ -55,6 +58,11 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+### TO DO:
+- [ ] Fix sending BTC transaction
+- [ ] Viewing the transaction info for tokens in Tron
+- [ ] Viewing the transaction info for Web3
 
 ## Author
 - [Vladyslav Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)
