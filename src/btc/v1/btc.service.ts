@@ -51,46 +51,31 @@ export class BtcServiceV1 {
   async getPreviousTransactionInfo(address) {
     try {
       const transactionsFull = await this.transactions({ address }, 'full');
-      const transactions = Object.values(transactionsFull.data);
 
-      let previousTransactionHash = null;
-      let previousOutputIndex = null;
+      let latestTransaction = null;
+      let latestBlockId = 0;
 
-      // перебираем все транзакции в обратном порядке
-      for (let i = 0; i < transactions.length; i++) {
-        const transaction = transactions[i];
+      for (const transaction of transactionsFull.data) {
+        const transactionHash = Object.keys(transaction)[0];
+        const blockId = transaction[transactionHash].transaction.block_id;
 
-        // проверяем, содержит ли выход указанный адрес
-        const previousOutput = transaction[
-          Object.keys(transaction)[0]
-        ].outputs.find((output) => output.recipient === address);
-
-        // если выход найден, сохраняем хэш предыдущей транзакции и индекс выхода
-        if (previousOutput) {
-          previousTransactionHash = Object.keys(transaction)[0];
-          previousOutputIndex = previousOutput.index;
-          break; // выходим из цикла, так как уже нашли предыдущую транзакцию
+        if (blockId > latestBlockId) {
+          latestBlockId = blockId;
+          latestTransaction = transaction[transactionHash];
         }
       }
 
       // если не найдено предыдущих транзакций, выбрасываем исключение
-      if (previousTransactionHash === null || previousOutputIndex === null) {
+      if (latestTransaction === null) {
         throw new HttpException(
           'No previous transactions found',
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      if (previousOutputIndex === undefined) {
-        throw new HttpException(
-          'Previous output index is undefined',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
       return {
-        previousTransactionHash,
-        previousOutputIndex,
+        previousTransactionHash: latestTransaction.transaction.hash,
+        previousOutputIndex: latestTransaction.outputs[0].index,
       };
     } catch (e) {
       throw new HttpException(
@@ -190,14 +175,18 @@ export class BtcServiceV1 {
       // запрос на транзакции отправителя
       const transactions = await this.transactions({ address }, 'standard');
 
+      // ------------------------------ //
+      //     прохождение условий        //
+      // ------------------------------ //
       // ищем, есть ли неподтвержденные транзакции
       const unconfirmedTransaction = !!transactions.data.find((transaction) => {
         return !transaction.is_success_transaction;
       }) as boolean;
 
       if (unconfirmedTransaction) {
-        throw new Error(
+        throw new HttpException(
           'You cannot send a new transaction if you have an unconfirmed transaction',
+          HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
 
@@ -207,20 +196,21 @@ export class BtcServiceV1 {
       }) as boolean;
 
       if (shippingAddresses) {
-        throw new Error(
-          'You cannot send a transaction twice to the same address',
-        );
-      }
-
-      if (sendBtcDto.fee < 20) {
         throw new HttpException(
-          'Fee value is too small',
+          'You cannot send a transaction twice to the same address',
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
 
       const feePerByte =
         sendBtcDto.fee || (await this.averageFee()).data.satoshi;
+
+      if (feePerByte < 20) {
+        throw new HttpException(
+          'Fee value is too small',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
 
       if (!validate(toAddress)) {
         throw new HttpException(
@@ -282,6 +272,7 @@ export class BtcServiceV1 {
 
       // устанавливаем комиссию для выхода с указанным индексом
       builtTransaction.fee = calculateFee;
+      // builtTransaction.outs[previousOutputIndex].value = calculateFee;
 
       // получаем шестнадцатеричное представление транзакции
       const hexTransaction = builtTransaction.toHex();
@@ -329,18 +320,23 @@ export class BtcServiceV1 {
         .catch((e) => {
           const errorMessage = e.response.data.context.error.toString();
 
-          if (
-            errorMessage == 'Invalid transaction. Error: txn-mempool-conflict'
-          ) {
-            throw new HttpException(
-              'You have an incomplete transaction. Wait until the previous transaction is completed',
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+          switch (errorMessage) {
+            case 'Invalid transaction. Error: txn-mempool-conflict':
+              throw new HttpException(
+                'You have an incomplete transaction. Wait until the previous transaction is completed',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            case 'Invalid transaction. Error: bad-txns-inputs-missingorspent':
+              throw new HttpException(
+                'Invalid transaction. previousTransactionHash value is incorrect',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            default:
+              throw new HttpException(
+                errorMessage,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
           }
-          throw new HttpException(
-            errorMessage,
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
         });
     } catch (e) {
       throw new HttpException(

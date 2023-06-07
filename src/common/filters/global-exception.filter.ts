@@ -33,6 +33,10 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
         : getMessage;
 
     switch (message) {
+      // ------------ btc ------------ //
+      case 'Non-base58 character':
+        message = 'Incorrect private key';
+        break;
       // ------------ trc ------------ //
       case 'class org.tron.core.exception.ContractValidateException : Validate TransferContract error, balance is not sufficient.':
         // trx: Insufficient coin balance

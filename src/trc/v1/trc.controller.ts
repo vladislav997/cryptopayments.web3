@@ -38,10 +38,10 @@ export class TrcControllerV1 {
     return this.trcService.send(sendTrcDto);
   }
 
-  @Post('/transaction')
+  @Get('/transaction')
   @HttpCode(200)
   transaction(
-    @Body(new ValidationPipe()) transactionTrcDto: TransactionTrcDto,
+    @Query(new ValidationPipe()) transactionTrcDto: TransactionTrcDto,
   ) {
     return this.trcService.transaction(transactionTrcDto);
   }
