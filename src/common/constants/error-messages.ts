@@ -1,0 +1,15 @@
+export const ERROR_MESSAGES = {
+  NO_PREVIOUS_TRANSACTIONS: 'No previous transactions found',
+  INCORRECT_ADDRESS: 'Incorrect address',
+  INCORRECT_RECIPIENT_ADDRESS: 'Incorrect recipient address',
+  UNCONFIRMED_TRANSACTION: 'You cannot send a new transaction if you have an unconfirmed transaction',
+  DUPLICATE_TRANSACTION: 'You cannot send a transaction twice to the same address',
+  SMALL_FEE_VALUE: 'Fee value is too small',
+  NONEXISTENT_OUTPUT: (previousOutputIndex: number) => `Output with index ${previousOutputIndex} does not exist.`,
+  INSUFFICIENT_COIN_BALANCE: 'Insufficient coin balance',
+  INCOMPLETE_TRANSACTION: 'You have an incomplete transaction. Wait until the previous transaction is completed',
+  INVALID_PREVIOUS_HASH: 'Invalid transaction. previousTransactionHash value is incorrect',
+  ADDRESS_NOT_FOUND: 'Address not found',
+  INCORRECT_CONTRACT_ADDRESS: 'Incorrect contract address',
+  TOKEN_VIEW_NOT_AVAILABLE: 'Viewing the transaction for tokens is currently not available',
+};

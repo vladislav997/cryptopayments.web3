@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as TronWeb from 'tronweb';
 import { tronWebCall } from '../../common/helper/helper.function';
 import axios from 'axios';
+import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 
 @Injectable()
 export class TrcServiceV1 {
@@ -59,7 +60,10 @@ export class TrcServiceV1 {
       const isAddressValid = await this.validateAddress(balanceTrcDto.address);
 
       if (!isAddressValid) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let balance;
@@ -81,7 +85,7 @@ export class TrcServiceV1 {
 
         if (!isContractValid) {
           throw new HttpException(
-            'Incorrect contract address',
+            ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
             HttpStatus.BAD_REQUEST,
           );
         }
@@ -128,7 +132,7 @@ export class TrcServiceV1 {
 
       if (!isRecipientAddressValid) {
         throw new HttpException(
-          'Incorrect recipient address',
+          ERROR_MESSAGES.INCORRECT_RECIPIENT_ADDRESS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -168,7 +172,7 @@ export class TrcServiceV1 {
 
         if (!isContractValid) {
           throw new HttpException(
-            'Incorrect contract address',
+            ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
             HttpStatus.BAD_REQUEST,
           );
         }
@@ -261,7 +265,7 @@ export class TrcServiceV1 {
         };
       } else {
         throw new HttpException(
-          'Viewing the transaction for tokens is currently not available',
+          ERROR_MESSAGES.TOKEN_VIEW_NOT_AVAILABLE,
           HttpStatus.SERVICE_UNAVAILABLE,
         );
       }
@@ -290,7 +294,10 @@ export class TrcServiceV1 {
       );
 
       if (!isAddressValid) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let url = `${this.apiTrongridUrl}/v1/accounts/${transactionsTrcDto.address}/transactions`;
@@ -305,7 +312,7 @@ export class TrcServiceV1 {
 
         if (!isContractValid) {
           throw new HttpException(
-            'Incorrect contract address',
+            ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
             HttpStatus.BAD_REQUEST,
           );
         }

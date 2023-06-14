@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { getAddressByPrivateKeyWeb3 } from '../common/helper/helper.function';
 import axios from 'axios';
 import contractJson from '../common/helper/contract-json';
+import { ERROR_MESSAGES } from '../common/constants/error-messages';
 const Web3 = require('web3');
 
 @Injectable()
@@ -102,7 +103,10 @@ export class Web3Service {
       const isAddressValid = web3.utils.isAddress(balanceWeb3Dto.address);
 
       if (!isAddressValid) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let balance;
@@ -123,7 +127,7 @@ export class Web3Service {
         // проверка валидности адреса контракта
         if (!isContractValid) {
           throw new HttpException(
-            'Incorrect contract address',
+            ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
             HttpStatus.BAD_REQUEST,
           );
         }
@@ -171,7 +175,7 @@ export class Web3Service {
 
       if (!isRecipientAddressValid) {
         throw new HttpException(
-          'Incorrect recipient address',
+          ERROR_MESSAGES.INCORRECT_RECIPIENT_ADDRESS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -256,7 +260,7 @@ export class Web3Service {
       );
       if (!isValidateContract) {
         throw new HttpException(
-          'Incorrect contract address',
+          ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -335,7 +339,10 @@ export class Web3Service {
       );
 
       if (!isAddressValid) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let result;
@@ -363,7 +370,7 @@ export class Web3Service {
 
         if (!isContractValid) {
           throw new HttpException(
-            'Incorrect contract address',
+            ERROR_MESSAGES.INCORRECT_CONTRACT_ADDRESS,
             HttpStatus.BAD_REQUEST,
           );
         }

@@ -6,6 +6,7 @@ import {
   convertToSatoshi,
 } from '../../common/helper/helper.function';
 import * as bitcoin from 'bitcoinjs-lib';
+import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 
 @Injectable()
 export class BtcServiceV1 {
@@ -68,7 +69,7 @@ export class BtcServiceV1 {
       // если не найдено предыдущих транзакций, выбрасываем исключение
       if (latestTransaction === null) {
         throw new HttpException(
-          'No previous transactions found',
+          ERROR_MESSAGES.NO_PREVIOUS_TRANSACTIONS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -133,7 +134,10 @@ export class BtcServiceV1 {
       const address = balanceBtcDto.address;
 
       if (!validate(address)) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const response = await axios.get(
@@ -185,7 +189,7 @@ export class BtcServiceV1 {
 
       if (unconfirmedTransaction) {
         throw new HttpException(
-          'You cannot send a new transaction if you have an unconfirmed transaction',
+          ERROR_MESSAGES.UNCONFIRMED_TRANSACTION,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
@@ -197,7 +201,7 @@ export class BtcServiceV1 {
 
       if (shippingAddresses) {
         throw new HttpException(
-          'You cannot send a transaction twice to the same address',
+          ERROR_MESSAGES.DUPLICATE_TRANSACTION,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
@@ -207,14 +211,14 @@ export class BtcServiceV1 {
 
       if (feePerByte < 20) {
         throw new HttpException(
-          'Fee value is too small',
+          ERROR_MESSAGES.SMALL_FEE_VALUE,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
 
       if (!validate(toAddress)) {
         throw new HttpException(
-          'Incorrect recipient address',
+          ERROR_MESSAGES.INCORRECT_RECIPIENT_ADDRESS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -265,7 +269,7 @@ export class BtcServiceV1 {
       // проверяем, что выход с указанным индексом существует
       if (previousOutputIndex >= builtTransaction.outs.length) {
         throw new HttpException(
-          `Output with index ${previousOutputIndex} does not exist.`,
+          ERROR_MESSAGES.NONEXISTENT_OUTPUT(previousOutputIndex),
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -298,7 +302,7 @@ export class BtcServiceV1 {
       // проверяем баланс пользователя
       if (userBalance.data < totalPayFormat) {
         throw new HttpException(
-          'Insufficient coin balance',
+          ERROR_MESSAGES.INSUFFICIENT_COIN_BALANCE,
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
@@ -323,12 +327,12 @@ export class BtcServiceV1 {
           switch (errorMessage) {
             case 'Invalid transaction. Error: txn-mempool-conflict':
               throw new HttpException(
-                'You have an incomplete transaction. Wait until the previous transaction is completed',
+                ERROR_MESSAGES.INCOMPLETE_TRANSACTION,
                 HttpStatus.INTERNAL_SERVER_ERROR,
               );
             case 'Invalid transaction. Error: bad-txns-inputs-missingorspent':
               throw new HttpException(
-                'Invalid transaction. previousTransactionHash value is incorrect',
+                ERROR_MESSAGES.INVALID_PREVIOUS_HASH,
                 HttpStatus.INTERNAL_SERVER_ERROR,
               );
             default:
@@ -395,7 +399,10 @@ export class BtcServiceV1 {
       const address = transactionsBtcDto.address;
 
       if (!validate(address)) {
-        throw new HttpException('Incorrect address', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.INCORRECT_ADDRESS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const response = await axios.get(
@@ -410,7 +417,10 @@ export class BtcServiceV1 {
 
       // проверка наличия данных для адреса
       if (!data) {
-        throw new HttpException('Address not found', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          ERROR_MESSAGES.ADDRESS_NOT_FOUND,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const transactions = data.transactions;
