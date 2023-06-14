@@ -1,5 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
+import { ERROR_MESSAGES } from '../constants/error-messages';
 
 export const getStatusCode = <T>(exception: T): number => {
   return exception instanceof HttpException
@@ -35,37 +36,37 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
     switch (message) {
       // ------------ btc ------------ //
       case 'Non-base58 character':
-        message = 'Incorrect private key';
+        message = ERROR_MESSAGES.INCORRECT_PRIVATE_KEY;
         break;
       // ------------ trc ------------ //
       case 'class org.tron.core.exception.ContractValidateException : Validate TransferContract error, balance is not sufficient.':
         // trx: Insufficient coin balance
-        message = 'Insufficient coin balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_COIN_BALANCE;
         break;
       case 'Account resource insufficient error.':
         // token: Insufficient coin balance
-        message = 'Insufficient coin balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_COIN_BALANCE;
         break;
       case 'class org.tron.core.exception.ContractValidateException : Validate TransferContract error, no OwnerAccount.':
-        message = 'Incorrect private key';
+        message = ERROR_MESSAGES.INCORRECT_PRIVATE_KEY;
         break;
       // ------------ erc ------------ //
       case 'Returned error: INTERNAL_ERROR: insufficient funds':
-        message = 'Insufficient coin balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_COIN_BALANCE;
         break;
       case 'Returned error: invalid opcode: INVALID':
-        message = 'Insufficient token balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_TOKEN_BALANCE;
         break;
       // ------------ bsc ------------ //
       case 'Returned error: insufficient funds for gas * price + value':
-        message = 'Insufficient coin balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_COIN_BALANCE;
         break;
       case 'Returned error: execution reverted: BEP20: transfer amount exceeds balance':
-        message = 'Insufficient token balance';
+        message = ERROR_MESSAGES.INSUFFICIENT_TOKEN_BALANCE;
         break;
       // ------------ general ------------ //
       case 'Private key must be 32 bytes in length.':
-        message = 'Incorrect private key';
+        message = ERROR_MESSAGES.INCORRECT_PRIVATE_KEY;
         break;
     }
 
