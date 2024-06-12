@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 
-Copyright (c) 2023 [Vladyslav Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)
+Copyright (c) 2023 [Vlad Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal

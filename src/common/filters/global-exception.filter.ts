@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { ERROR_MESSAGES } from '../constants/error-messages';
+import loggerConfig from '../configs/logger.config';
 
 export const getStatusCode = <T>(exception: T): number => {
   return exception instanceof HttpException
@@ -17,22 +18,30 @@ export const getErrorMessage = <T>(exception: T): string => {
 @Catch()
 export class GlobalExceptionFilter<T> implements ExceptionFilter {
   catch(exception: T, host: ArgumentsHost) {
+    // получение контекста выполнения
     const ctx = host.switchToHttp();
+    // получение объекта ответа
     const response = ctx.getResponse<Response>();
-    // const request = ctx.getRequest<IncomingMessage>();
+    // получение объекта запроса
+    const request = ctx.getRequest<Request>();
+    // функция для получения статус кода из исключения
     const getStatus = getStatusCode<T>(exception);
+    // функция для получения сообщения об ошибке из исключения
     const getMessage = getErrorMessage<T>(exception);
+    // получение статус кода из исключения или его причины, если доступно
     const statusCode =
       exception && exception['cause']?.status !== undefined
         ? exception['cause'].status
         : getStatus;
     let message =
+      // получение сообщения об ошибке из исключения или его опций, если доступно
       exception && exception['response'] && exception['response']['message']
         ? exception['response']['message']
         : exception && exception['options'] && exception['options']['cause']
         ? exception['options']['cause']
         : getMessage;
 
+    // обработка ошибок
     switch (message) {
       // ------------ btc ------------ //
       case 'Non-base58 character':
@@ -64,12 +73,22 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
       case 'Returned error: execution reverted: BEP20: transfer amount exceeds balance':
         message = ERROR_MESSAGES.INSUFFICIENT_TOKEN_BALANCE;
         break;
-      // ------------ general ------------ //
+      // ------------ общее ------------ //
       case 'Private key must be 32 bytes in length.':
         message = ERROR_MESSAGES.INCORRECT_PRIVATE_KEY;
         break;
     }
 
+    // запись в логи
+    loggerConfig.error(message, {
+      statusCode: statusCode || null,
+      url: request.url || null,
+      body: request.body || null,
+      functionName: 'GlobalExceptionFilter',
+      className: this.constructor.name || null,
+    });
+
+    // установка статус кода и ответа с единой структурой
     response.status(statusCode).json({
       status: false,
       message: message,
