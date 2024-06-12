@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as TronWeb from 'tronweb';
-import { tronWebCall } from '../../common/helper/helper.function';
+import { tronWebCall } from '../../common/helpers/helper.function';
 import axios from 'axios';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 

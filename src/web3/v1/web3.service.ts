@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { getAddressByPrivateKeyWeb3 } from '../common/helper/helper.function';
+import { getAddressByPrivateKeyWeb3 } from '../../common/helpers/helper.function';
 import axios from 'axios';
-import contractJson from '../common/helper/contract-json';
-import { ERROR_MESSAGES } from '../common/constants/error-messages';
+import contractJson from '../../common/helpers/contract-json';
+import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 const Web3 = require('web3');
 
 @Injectable()
-export class Web3Service {
+export class Web3ServiceV1 {
   private apiEtherscanUrl = 'https://api.etherscan.io/api';
   private apiBscscanUrl = 'https://api.bscscan.com/api';
 

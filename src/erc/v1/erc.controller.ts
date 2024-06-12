@@ -7,17 +7,17 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import { Web3Service } from '../../web3/web3.service';
-import { BalanceWeb3Dto } from '../../web3/dto/balance-web3.dto';
-import { SendWeb3Dto } from '../../web3/dto/send-web3.dto';
-import { TransactionsWeb3Dto } from '../../web3/dto/transactions-web3.dto';
+import { BalanceWeb3Dto } from '../../web3/v1/dto/balance-web3.dto';
+import { SendWeb3Dto } from '../../web3/v1/dto/send-web3.dto';
+import { TransactionsWeb3Dto } from '../../web3/v1/dto/transactions-web3.dto';
+import { Web3ServiceV1 } from '../../web3/v1/web3.service';
 
 @Controller({
   path: 'erc',
   version: '1',
 })
 export class ErcControllerV1 {
-  constructor(private readonly web3Service: Web3Service) {}
+  constructor(private readonly web3Service: Web3ServiceV1) {}
 
   @Post('/create')
   @HttpCode(201)

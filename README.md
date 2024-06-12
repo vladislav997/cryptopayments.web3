@@ -1,6 +1,10 @@
 # CryptoPayments WEB3
 
-## Installation
+### framework:
+<img src="https://nestjs.com/img/logo-small.svg" width="14" /> 
+NestJs v9
+
+## 💻 Installation
 
 ```bash
 $ cp .env.development .env
@@ -10,10 +14,10 @@ $ cp .env.development .env
 $ npm install
 ```
 
-## Documentation
+## 🧻 Documentation
 See docs/ directory
 
-## Set up
+## 🧑‍🔧 Set up
 
 ### Used API:
 
@@ -42,11 +46,21 @@ send transaction /
 get previous transaction hash /
 check balance
 (❗it's a paid api)
+(☝️needed to add [key](https://blockchair.com/api/plans) to .env)
 ```html
 https://blockchair.com
 ```
 
-## Running the app
+## 🕸️ Git Flow:
+Commit Types:
+- feature — used when adding new application-level functionality.
+- fix — if a significant bug has been fixed.
+- refactor — refactoring application code.
+- test — anything related to testing.
+- chore — maintenance of code.
+- rollback — reverting a commit.
+
+## 🚀 Running the app
 
 ```bash
 # development
@@ -59,10 +73,10 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-### TO DO:
+### 📝 TO DO:
 - [ ] Fix sending BTC transaction
 - [ ] Viewing the transaction info for tokens in Tron
 - [ ] Viewing the transaction info for Web3
 
-## Author
-- [Vladyslav Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)
+## 👨‍💻 Author
+- [Vlad Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)

@@ -4,7 +4,7 @@ import { validate } from 'bitcoin-address-validation';
 import {
   convertFromSatoshi,
   convertToSatoshi,
-} from '../../common/helper/helper.function';
+} from '../../common/helpers/helper.function';
 import * as bitcoin from 'bitcoinjs-lib';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 
