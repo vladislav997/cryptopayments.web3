@@ -11,11 +11,11 @@ $ cp .env.development .env
 ```
 
 ```bash
-$ npm install
+$ npm i
 ```
 
 ## 🧻 Documentation
-See docs/ directory
+See `docs/` directory
 
 ## 🧑‍🔧 Set up
 
