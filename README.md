@@ -1,8 +1,10 @@
-# CryptoPayments WEB3
+# Cryptowallet
 
-### framework:
-<img src="https://nestjs.com/img/logo-small.svg" width="14" /> 
-NestJs v9
+support networks: ERC20, BEP20, TRC20, Bitcoin Mainnet
+
+libraries: Web3, TronWeb, bitcoinjs-lib
+
+framework: NestJs v9
 
 ## 💻 Installation
 
@@ -42,9 +44,7 @@ https://bitcoinfees.earn.com
 ```
 
 For BTC:
-send transaction /
-get previous transaction hash /
-check balance
+send transaction / balance
 (❗it's a paid api)
 (☝️needed to add [key](https://blockchair.com/api/plans) to .env)
 ```html
@@ -79,4 +79,4 @@ $ npm run start:prod
 - [ ] Viewing the transaction info for Web3
 
 ## 👨‍💻 Author
-- [Vlad Klopota](https://www.linkedin.com/in/vladyslav-k-b1225423a/)
+- [Vlad Klopota](https://t.me/arti39)
